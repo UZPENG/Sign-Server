@@ -1,0 +1,113 @@
+group 'uzpeng'
+version '1.0'
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'idea'
+apply plugin: "com.bmuschko.tomcat"
+apply plugin: 'com.bmuschko.tomcat-base'
+
+sourceCompatibility = 1.8
+
+
+ext {
+    springVersion = "5.0.1.RELEASE"
+    mybatisVersion = "3.2.2"
+}
+
+tomcat{
+    httpPort = 8080
+}
+
+buildscript{
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.bmuschko:gradle-tomcat-plugin:2.2.3"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    /**
+     * 测试
+     */
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.testng', name: 'testng', version: '6.11'
+    testCompile "org.springframework:spring-test:$springVersion"
+
+    /**
+     * spring核心
+     */
+    compile "org.springframework:spring-context:$springVersion"
+    compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.4'
+
+    /**
+     * web
+     */
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+    providedCompile group: 'javax.servlet', name: 'jstl', version: '1.2'
+    compile "org.springframework:spring-webmvc:$springVersion"
+
+    /**
+     * 数据库
+     */
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.45'
+    compile "org.springframework:spring-jdbc:$springVersion"
+
+    /**
+     * ORM框架
+     */
+    compile group: 'org.mybatis', name: 'mybatis', version: '3.2.2'
+    compile group: 'org.mybatis', name: 'mybatis-spring', version: '1.3.1'
+
+    /**
+     * 安全框架
+     */
+    compile "org.springframework.security:spring-security-web:$springVersion"
+    compile "org.springframework.security:spring-security-config:$springVersion"
+    compile "org.springframework.security:spring-security-oauth2-jose:$springVersion"
+
+    /**
+     * 序列化
+     */
+    compile group: 'org.json', name: 'json', version: '20160810'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.2'
+
+    /**
+     * 邮件
+     */
+    compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.1'
+    compile "org.springframework:spring-context-support:$springVersion"
+
+    /**
+     * 二维码编码与解码
+     */
+    compile group: 'com.google.zxing', name: 'javase', version: '3.3.0'
+
+    /**
+     *事务动态代理支持库
+     */
+//    compile group: 'cglib', name: 'cglib', version: '3.2.6'
+
+    /**
+     * 日志
+     */
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.10.0'
+
+
+    /**
+     * 嵌入式tomcat
+     */
+    def tomcatVersion = '7.0.82'
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+}
