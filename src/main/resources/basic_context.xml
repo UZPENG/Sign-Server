@@ -12,17 +12,42 @@
 
     <context:component-scan base-package="com.uzpeng.sign.dao"/>
     <context:component-scan base-package="com.uzpeng.sign.service"/>
+    <context:component-scan base-package="com.uzpeng.sign.config"/>
+
+    <context:annotation-config />
+
+    <bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath*:email.properties</value>
+                <value>classpath*:database.properties</value>
+                <value>classpath*:application.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="properties" ref="configProperties"/>
+    </bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
           destroy-method="close"
           p:driverClassName="com.mysql.jdbc.Driver"
-          p:url="jdbc:mysql://secret.sign.me:3306/sign_system?useUnicode=yes&amp;characterEncoding=UTF-8"
-          p:username="uzpeng"
-          p:password=""/>
+          p:url="${database.jdbc.url}"
+          p:username="${database.username}"
+          p:password="${database.password}"/>
 
     <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
           p:dataSource-ref="dataSource"/>
     <tx:annotation-driven transaction-manager="txManager"/>
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/view/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>
 
     <!--<bean id="handleException" class="com.uzpeng.exception.CommonExceptionHandler"/>-->
 
@@ -31,7 +56,7 @@
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.uzpeng.sign.mapper" />
+        <property name="basePackage" value="com.uzpeng.sign.persistence" />
     </bean>
 
 </beans>

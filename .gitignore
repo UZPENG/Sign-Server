@@ -4,3 +4,5 @@ build
 gradle
 out
 config.json
+database.properties
+email.properties
