@@ -7,8 +7,9 @@ public class CourseTimeDO {
     private Integer id;
     private Integer courseId;
     private Integer courseWeekday;
-    private Integer course_section;
-    private String loc;
+    private Integer courseSectionStart;
+    private Integer courseSectionEnd;
+    private String  loc;
 
     public Integer getId() {
         return id;
@@ -34,12 +35,20 @@ public class CourseTimeDO {
         this.courseWeekday = courseWeekday;
     }
 
-    public Integer getCourse_section() {
-        return course_section;
+    public Integer getCourseSectionStart() {
+        return courseSectionStart;
     }
 
-    public void setCourse_section(Integer course_section) {
-        this.course_section = course_section;
+    public void setCourseSectionStart(Integer courseSectionStart) {
+        this.courseSectionStart = courseSectionStart;
+    }
+
+    public Integer getCourseSectionEnd() {
+        return courseSectionEnd;
+    }
+
+    public void setCourseSectionEnd(Integer courseSectionEnd) {
+        this.courseSectionEnd = courseSectionEnd;
     }
 
     public String getLoc() {

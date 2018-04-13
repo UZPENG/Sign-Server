@@ -1,5 +1,6 @@
 package com.uzpeng.sign.dao;
 
+import com.uzpeng.sign.domain.RoleDO;
 import com.uzpeng.sign.domain.UserDO;
 import com.uzpeng.sign.persistence.UserMapper;
 import com.uzpeng.sign.util.CryptoUtil;
@@ -36,13 +37,23 @@ public class UserDAO {
         userMapper.updatePassword(newPassword, id);
     }
 
-    public boolean checkUserAndPassword(String name, String password){
+    public Integer checkUserAndPassword(String name, String password){
         String storedPassword = userMapper.checkUserAndPassword(name);
 
-        return CryptoUtil.match(password, storedPassword);
+        boolean isCorrect = CryptoUtil.match(password, storedPassword);
+        if(isCorrect) {
+            return userMapper.getIdByName(name);
+        }else {
+            return null;
+        }
+
     }
 
     public void insertUserList(List<UserDO> userDOList){
         userMapper.insertUserList(userDOList);
+    }
+
+    public RoleDO getRole(int id){
+        return userMapper.getRole(id);
     }
 }

@@ -1,5 +1,6 @@
 package com.uzpeng.sign.persistence;
 
+import com.uzpeng.sign.domain.RoleDO;
 import com.uzpeng.sign.domain.UserDO;
 import org.apache.ibatis.annotations.*;
 
@@ -11,6 +12,9 @@ import java.util.List;
 public interface UserMapper {
     @Select("SELECT * FROM user WHERE id = #{id}")
     UserDO getUserInfo(@Param("id") int id);
+
+    @Select("SELECT id FROM user WHERE name=#{name}")
+    Integer getIdByName(@Param("name")String name);
 
     @Update("UPDATE user SET password = #{password} WHERE id=#{id}")
     void updatePassword(@Param("password") String password, @Param("id")int id);
@@ -30,4 +34,7 @@ public interface UserMapper {
 
     @InsertProvider(type = UserProvider.class, method = "insertUserList")
     void insertUserList(@Param("list")List<UserDO> userDOList);
+
+    @Select("SELECT role as role, role_id as roleId FROM user WHERE id=#{id}")
+    RoleDO getRole(@Param("id") int id);
 }

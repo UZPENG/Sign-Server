@@ -1,11 +1,13 @@
 package com.uzpeng.sign.web;
 
+import com.uzpeng.sign.domain.RoleDO;
 import com.uzpeng.sign.domain.SessionAttribute;
 import com.uzpeng.sign.domain.UserDO;
 import com.uzpeng.sign.interceptor.AuthenticatedInterceptor;
 import com.uzpeng.sign.service.UserService;
 import com.uzpeng.sign.util.CommonResponseHandler;
 import com.uzpeng.sign.util.SessionStoreKey;
+import com.uzpeng.sign.util.UserMap;
 import com.uzpeng.sign.util.VerifyCodeGenerator;
 import com.uzpeng.sign.validation.AuthenticatedRequest;
 import com.uzpeng.sign.web.dto.EmailDTO;
@@ -43,7 +45,7 @@ public class UserController {
     @Autowired
     private Environment env;
 
-    @RequestMapping(value = "/v1/register/verify", method = RequestMethod.POST,
+    @RequestMapping(value = "/v1/register/verify", method = RequestMethod.GET,
             produces = "application/json;charset=utf-8")
     @ResponseBody
     public String sendVerifyCode(@Valid EmailDTO emailDTO, HttpSession session, HttpServletRequest request,
@@ -119,10 +121,10 @@ public class UserController {
                         HttpSession session){
 
         logger.info("start check password!...");
-        boolean isPasswordCorrect = userService.loginCheck(loginDTO);
+        Integer id = userService.loginCheck(loginDTO);
         logger.info("finish check password, start set cookie...");
 
-        if(isPasswordCorrect) {
+        if(id != null) {
             String cookieValue = Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes());
             SessionAttribute authInfo = new SessionAttribute(cookieValue, LocalDateTime.MAX);
             session.setAttribute(SessionStoreKey.KEY_AUTH, authInfo);
@@ -132,7 +134,10 @@ public class UserController {
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
 
-            logger.info("Login successfully!");
+            RoleDO roleDO = userService.getRole(id);
+            UserMap.putId(cookieValue, roleDO);
+
+            logger.info("Login successfully! user is is "+roleDO.getRoleId());
 
             return CommonResponseHandler.handleResponse(
                     env.getProperty("msg.login.success"),  env.getProperty("link.login"));

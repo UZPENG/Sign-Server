@@ -2,6 +2,7 @@ package com.uzpeng.sign.service;
 
 import com.uzpeng.sign.config.EmailConfig;
 import com.uzpeng.sign.dao.UserDAO;
+import com.uzpeng.sign.domain.RoleDO;
 import com.uzpeng.sign.domain.UserDO;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.util.ThreadPool;
@@ -30,7 +31,7 @@ public class UserService {
         userDAO.insertUser(ObjectTranslateUtil.registerDTOToUserDO(registerDTO));
     }
 
-    public boolean loginCheck(LoginDTO loginDTO){
+    public Integer loginCheck(LoginDTO loginDTO){
         return userDAO.checkUserAndPassword(loginDTO.getUsername(), loginDTO.getPassword());
     }
 
@@ -53,6 +54,10 @@ public class UserService {
 
         //todo
 //        ThreadPool.run(()-> mailSender.send(simpleMailMessage));
+    }
+
+    public RoleDO getRole(int id){
+        return userDAO.getRole(id);
     }
 
     public UserDO getUserInfo(String id){

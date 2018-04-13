@@ -18,4 +18,11 @@ public interface StudentMapper {
 
     @Select("SELECT * FROM  student WHERE id=#{id}")
     StudentDO getStudent(@Param("id") int id);
+
+    @SelectProvider(type = StudentProvider.class, method = "getIdByNum")
+    List<Integer> getStudentIdByNum(@Param("list") List<Integer> num);
+
+    @Select("SELECT student_num FROM student;")
+    List<Integer> getStudentNum();
+
 }

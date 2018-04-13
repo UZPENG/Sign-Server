@@ -3,6 +3,7 @@ package com.uzpeng.sign.service;
 import com.uzpeng.sign.dao.StudentDAO;
 import com.uzpeng.sign.domain.StudentDO;
 import com.uzpeng.sign.excpetion.InvalidFileException;
+import com.uzpeng.sign.web.dto.StudentDTO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -30,14 +31,19 @@ public class StudentService {
     @Autowired
     private StudentDAO studentDAO;
 
-    public boolean insertStudentsByFile(InputStream excelFileStream, String fiLeName){
+    public boolean insertStudentsByFile(InputStream excelFileStream, String fiLeName, Integer courseId){
         List<StudentDO> studentDOList = parseExcelFile(excelFileStream, fiLeName);
         if(studentDOList !=null) {
-            studentDAO.insertStudents(studentDOList);
+            studentDAO.insertStudents(studentDOList, courseId);
             return true;
         } else {
             return false;
         }
+    }
+
+    public void insertStudent(StudentDTO studentDTO){
+        //todo
+//        studentDAO.insertStudents(studentDTO);
     }
 
     private List<StudentDO> parseExcelFile(InputStream excelFileStream, String filename) throws InvalidFileException{
@@ -62,13 +68,16 @@ public class StudentService {
                 }
                 Cell studentNumCell = currentRow.getCell(0);
                 Cell studentNameCell = currentRow.getCell(1);
+                Cell studentNameClass = currentRow.getCell(0);
 
                 if (studentNumCell != null && studentNameCell != null){
                     String studentNum = String.valueOf((int)studentNumCell.getNumericCellValue());
                     String studentName = studentNameCell.getStringCellValue();
+                    String studentClass = studentNameCell.getStringCellValue();
                     StudentDO tmpStudentDO = new StudentDO();
                     tmpStudentDO.setName(studentName);
-                    tmpStudentDO.setNum(studentNum);
+                    tmpStudentDO.setNum(Integer.parseInt(studentNum));
+                    tmpStudentDO.setClassInfo(studentClass);
                     studentDOList.add(tmpStudentDO);
                 } else {
                     break;

@@ -1,7 +1,10 @@
 package com.uzpeng.sign.dao;
 
+import com.uzpeng.sign.dao.vo.StudentVO;
+import com.uzpeng.sign.domain.SelectiveCourseDO;
 import com.uzpeng.sign.domain.StudentDO;
 import com.uzpeng.sign.domain.UserDO;
+import com.uzpeng.sign.persistence.SelectiveCourseMapper;
 import com.uzpeng.sign.persistence.StudentMapper;
 import com.uzpeng.sign.persistence.UserMapper;
 import com.uzpeng.sign.util.CryptoUtil;
@@ -27,23 +30,72 @@ public class StudentDAO {
     private StudentMapper studentMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private SelectiveCourseMapper selectiveCourseMapper;
 
-    public void insertStudents(List<StudentDO> students){
-        studentMapper.insertStudentList(students);
-        List<UserDO> users = new ArrayList<>();
-
+    public void insertStudents(List<StudentDO> students, Integer courseId){
         logger.info("student list's size is " + students.size());
-        for (int i = 0; i < students.size(); i++) {
+
+        List<Integer> existNumList = studentMapper.getStudentNum();
+
+        List<StudentDO> noAccountStudents = new ArrayList<>();
+        for (StudentDO student :
+                students) {
+            if (!existNumList.contains(student.getNum())){
+                noAccountStudents.add(student);
+            }
+        }
+
+        studentMapper.insertStudentList(noAccountStudents);
+
+        List<UserDO> users = new ArrayList<>();
+        for (StudentDO currentStudent : students) {
             UserDO tmpUser = new UserDO();
-            StudentDO currentStudent = students.get(i);
-            tmpUser.setName(currentStudent.getNum());
-            tmpUser.setPassword(CryptoUtil.encodePassword(currentStudent.getNum()));
+
+            tmpUser.setName(String.valueOf(currentStudent.getNum()));
+            tmpUser.setPassword(CryptoUtil.encodePassword(String.valueOf(currentStudent.getNum())));
             tmpUser.setRole(Role.STUDENT);
-            tmpUser.setRoleId(students.get(i).getId());
+            tmpUser.setRoleId(currentStudent.getId());
             tmpUser.setRegisterTime(LocalDateTime.now());
             users.add(tmpUser);
         }
         
         userMapper.insertUserList(users);
+
+        insertSelectiveCourse(students, courseId);
+    }
+
+    public void insertStudent(StudentDO studentDO, Integer courseId){
+        List<StudentDO> student = new ArrayList<>();
+        student.add(studentDO);
+
+        insertStudents(student, courseId);
+    }
+
+    public List<StudentVO> getStudent(Integer courseId){
+//        List<StudentDO> studentDOList = studentMapper.getStudent(1);
+        //todo 
+        return null;
+    }
+
+    private void insertSelectiveCourse(List<StudentDO> studentDOS, Integer courseId){
+        List<Integer> numList = new ArrayList<>();
+
+        for (StudentDO student :
+                studentDOS) {
+            numList.add(student.getNum());
+        }
+
+        List<Integer> ids = studentMapper.getStudentIdByNum(numList);
+
+        List<SelectiveCourseDO> selectiveCourseDOS = new ArrayList<>();
+        for (Integer id : ids) {
+            SelectiveCourseDO selectiveCourseDO = new SelectiveCourseDO();
+            selectiveCourseDO.setCourseId(courseId);
+            selectiveCourseDO.setStudentId(id);
+
+            selectiveCourseDOS.add(selectiveCourseDO);
+        }
+        selectiveCourseMapper.addSelectiveCourseList(selectiveCourseDOS);
     }
 }

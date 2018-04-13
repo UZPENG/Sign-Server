@@ -5,8 +5,9 @@ package com.uzpeng.sign.domain;
  */
 public class StudentDO {
     private Integer id;
-    private String num;
+    private Integer num;
     private String name;
+    private String classInfo;
     private String collegeId;
     private Integer entranceYear;
     private String note;
@@ -43,11 +44,11 @@ public class StudentDO {
         this.id = id;
     }
 
-    public String getNum() {
+    public Integer getNum() {
         return num;
     }
 
-    public void setNum(String num) {
+    public void setNum(Integer num) {
         this.num = num;
     }
 
@@ -57,5 +58,13 @@ public class StudentDO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getClassInfo() {
+        return classInfo;
+    }
+
+    public void setClassInfo(String classInfo) {
+        this.classInfo = classInfo;
     }
 }
