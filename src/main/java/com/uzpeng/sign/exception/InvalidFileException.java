@@ -1,4 +1,4 @@
-package com.uzpeng.sign.excpetion;
+package com.uzpeng.sign.exception;
 
 /**
  * @author serverliu on 2018/4/9.

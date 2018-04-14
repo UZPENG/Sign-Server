@@ -1,12 +1,12 @@
-package com.uzpeng.sign.web.dto;
+package com.uzpeng.sign.dao.bo;
 
 import java.util.List;
 
 /**
- * @author serverliu on 2018/4/10.
+ * @author serverliu on 2018/4/13.
  */
-public class CourseDTO {
-    private String courseId;
+public class CourseBO {
+    private Integer courseId;
     private Integer teacherId;
     private String courseName;
     private String courseNum;
@@ -52,14 +52,6 @@ public class CourseDTO {
         public void setLoc(String loc) {
             this.loc = loc;
         }
-    }
-
-    public String getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(String courseId) {
-        this.courseId = courseId;
     }
 
     public Integer getStartWeek() {
@@ -116,5 +108,13 @@ public class CourseDTO {
 
     public void setSemester(String semester) {
         this.semester = semester;
+    }
+
+    public Integer getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Integer courseId) {
+        this.courseId = courseId;
     }
 }

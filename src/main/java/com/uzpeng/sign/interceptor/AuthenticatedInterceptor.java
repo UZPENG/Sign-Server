@@ -1,6 +1,6 @@
 package com.uzpeng.sign.interceptor;
 
-import com.uzpeng.sign.domain.SessionAttribute;
+import com.uzpeng.sign.support.SessionAttribute;
 import com.uzpeng.sign.util.SessionStoreKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

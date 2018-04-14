@@ -1,11 +1,20 @@
-package com.uzpeng.sign.domain;
+package com.uzpeng.sign.support;
 
 /**
  * @author serverliu on 2018/4/3.
  */
 public class CommonResponse {
+    private String status;
     private String msg;
     private String link;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getLink() {
         return link;

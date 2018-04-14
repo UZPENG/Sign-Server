@@ -33,10 +33,6 @@ public class UserDAO {
         userMapper.updateUserName(username, id);
     }
 
-    public void updatePassword(String newPassword, int id){
-        userMapper.updatePassword(newPassword, id);
-    }
-
     public Integer checkUserAndPassword(String name, String password){
         String storedPassword = userMapper.checkUserAndPassword(name);
 
@@ -46,7 +42,6 @@ public class UserDAO {
         }else {
             return null;
         }
-
     }
 
     public void insertUserList(List<UserDO> userDOList){
@@ -55,5 +50,9 @@ public class UserDAO {
 
     public RoleDO getRole(int id){
         return userMapper.getRole(id);
+    }
+
+    public void updatePassword(Integer id, String newPassword){
+        userMapper.updatePassword(id, newPassword);
     }
 }

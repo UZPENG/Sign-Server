@@ -49,7 +49,7 @@
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>
 
-    <!--<bean id="handleException" class="com.uzpeng.exception.CommonExceptionHandler"/>-->
+    <bean id="handleException" class="com.uzpeng.sign.exception.CommonExceptionHandler"/>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />

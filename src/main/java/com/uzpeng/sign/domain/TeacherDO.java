@@ -6,10 +6,10 @@ package com.uzpeng.sign.domain;
 public class TeacherDO {
     private Integer id;
     private String name;
-    private Integer cardNum;
-    private String telNumber;
-    private String officeHour;
-    private String officeLoc;
+    private Integer card_num;
+    private String tel_number;
+    private String office_hour;
+    private String office_loc;
     private String note;
 
     public Integer getId() {
@@ -29,35 +29,35 @@ public class TeacherDO {
     }
 
     public Integer getCardNum() {
-        return cardNum;
+        return card_num;
     }
 
     public void setCardNum(Integer cardNum) {
-        this.cardNum = cardNum;
+        this.card_num = cardNum;
     }
 
     public String getTelNumber() {
-        return telNumber;
+        return tel_number;
     }
 
     public void setTelNumber(String telNumber) {
-        this.telNumber = telNumber;
+        this.tel_number = telNumber;
     }
 
     public String getOfficeHour() {
-        return officeHour;
+        return office_hour;
     }
 
     public void setOfficeHour(String officeHour) {
-        this.officeHour = officeHour;
+        this.office_hour = officeHour;
     }
 
     public String getOfficeLoc() {
-        return officeLoc;
+        return office_loc;
     }
 
     public void setOfficeLoc(String officeLoc) {
-        this.officeLoc = officeLoc;
+        this.office_loc = officeLoc;
     }
 
     public String getNote() {

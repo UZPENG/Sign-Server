@@ -4,24 +4,24 @@ package com.uzpeng.sign.domain;
  * @author serverliu on 2018/4/11.
  */
 public class SelectiveCourseDO {
-    private Integer courseId;
-    private Integer studentId;
+    private Integer course_id;
+    private Integer student_id;
     private String type;
 
     public Integer getCourseId() {
-        return courseId;
+        return course_id;
     }
 
     public void setCourseId(Integer courseId) {
-        this.courseId = courseId;
+        this.course_id = courseId;
     }
 
     public Integer getStudentId() {
-        return studentId;
+        return student_id;
     }
 
     public void setStudentId(Integer studentId) {
-        this.studentId = studentId;
+        this.student_id = studentId;
     }
 
     public String getType() {

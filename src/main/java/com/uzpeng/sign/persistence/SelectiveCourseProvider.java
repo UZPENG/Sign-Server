@@ -14,7 +14,7 @@ public class SelectiveCourseProvider {
         List list = (List)map.get("list");
 
         String statement =  "INSERT INTO selective_course(course_id, student_id) VALUES";
-        MessageFormat messageFormat = new MessageFormat("(#'{'list[{0}].courseId}, #'{'list[{0}].studentId})");
+        MessageFormat messageFormat = new MessageFormat("(#'{'list[{0}].course_id}, #'{'list[{0}].student_id})");
 
         StringBuilder statementBuilder = new StringBuilder();
         statementBuilder.append(statement);

@@ -1,6 +1,6 @@
 package com.uzpeng.sign.dao;
 
-import com.uzpeng.sign.dao.vo.StudentVO;
+import com.uzpeng.sign.dao.bo.StudentBO;
 import com.uzpeng.sign.domain.SelectiveCourseDO;
 import com.uzpeng.sign.domain.StudentDO;
 import com.uzpeng.sign.domain.UserDO;
@@ -38,29 +38,35 @@ public class StudentDAO {
 
         List<Integer> existNumList = studentMapper.getStudentNum();
 
+        logger.info("existNumList is "+existNumList.size());
+
         List<StudentDO> noAccountStudents = new ArrayList<>();
         for (StudentDO student :
                 students) {
-            if (!existNumList.contains(student.getNum())){
+            if (existNumList.size() == 0 || !existNumList.contains(student.getNum())){
                 noAccountStudents.add(student);
             }
         }
 
-        studentMapper.insertStudentList(noAccountStudents);
+        logger.info("noAccountStudents is "+noAccountStudents.size());
 
-        List<UserDO> users = new ArrayList<>();
-        for (StudentDO currentStudent : students) {
-            UserDO tmpUser = new UserDO();
+        if(noAccountStudents.size() > 0) {
+            studentMapper.insertStudentList(noAccountStudents);
 
-            tmpUser.setName(String.valueOf(currentStudent.getNum()));
-            tmpUser.setPassword(CryptoUtil.encodePassword(String.valueOf(currentStudent.getNum())));
-            tmpUser.setRole(Role.STUDENT);
-            tmpUser.setRoleId(currentStudent.getId());
-            tmpUser.setRegisterTime(LocalDateTime.now());
-            users.add(tmpUser);
+            List<UserDO> users = new ArrayList<>();
+            for (StudentDO currentStudent : noAccountStudents) {
+                UserDO tmpUser = new UserDO();
+
+                tmpUser.setName(String.valueOf(currentStudent.getNum()));
+                tmpUser.setPassword(CryptoUtil.encodePassword(String.valueOf(currentStudent.getNum())));
+                tmpUser.setRole(Role.STUDENT);
+                tmpUser.setRoleId(currentStudent.getId());
+                tmpUser.setRegisterTime(LocalDateTime.now());
+                users.add(tmpUser);
+            }
+            //todo 处理已经存在的异常
+            userMapper.insertUserList(users);
         }
-        
-        userMapper.insertUserList(users);
 
         insertSelectiveCourse(students, courseId);
     }
@@ -72,14 +78,14 @@ public class StudentDAO {
         insertStudents(student, courseId);
     }
 
-    public List<StudentVO> getStudent(Integer courseId){
+    public List<StudentBO> getStudent(Integer courseId){
 //        List<StudentDO> studentDOList = studentMapper.getStudent(1);
         //todo 
         return null;
     }
 
     private void insertSelectiveCourse(List<StudentDO> studentDOS, Integer courseId){
-        List<Integer> numList = new ArrayList<>();
+        List<String> numList = new ArrayList<>();
 
         for (StudentDO student :
                 studentDOS) {

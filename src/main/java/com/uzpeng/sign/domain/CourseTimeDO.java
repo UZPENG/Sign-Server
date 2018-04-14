@@ -5,10 +5,10 @@ package com.uzpeng.sign.domain;
  */
 public class CourseTimeDO {
     private Integer id;
-    private Integer courseId;
-    private Integer courseWeekday;
-    private Integer courseSectionStart;
-    private Integer courseSectionEnd;
+    private Integer course_id;
+    private Integer course_weekday;
+    private Integer course_section_start;
+    private Integer course_section_end;
     private String  loc;
 
     public Integer getId() {
@@ -20,35 +20,35 @@ public class CourseTimeDO {
     }
 
     public Integer getCourseId() {
-        return courseId;
+        return course_id;
     }
 
     public void setCourseId(Integer courseId) {
-        this.courseId = courseId;
+        this.course_id = courseId;
     }
 
     public Integer getCourseWeekday() {
-        return courseWeekday;
+        return course_weekday;
     }
 
     public void setCourseWeekday(Integer courseWeekday) {
-        this.courseWeekday = courseWeekday;
+        this.course_weekday = courseWeekday;
     }
 
     public Integer getCourseSectionStart() {
-        return courseSectionStart;
+        return course_section_start;
     }
 
     public void setCourseSectionStart(Integer courseSectionStart) {
-        this.courseSectionStart = courseSectionStart;
+        this.course_section_start = courseSectionStart;
     }
 
     public Integer getCourseSectionEnd() {
-        return courseSectionEnd;
+        return course_section_end;
     }
 
     public void setCourseSectionEnd(Integer courseSectionEnd) {
-        this.courseSectionEnd = courseSectionEnd;
+        this.course_section_end = courseSectionEnd;
     }
 
     public String getLoc() {

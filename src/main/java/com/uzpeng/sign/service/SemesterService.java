@@ -1,7 +1,7 @@
 package com.uzpeng.sign.service;
 
+import com.uzpeng.sign.dao.bo.SemesterBO;
 import com.uzpeng.sign.dao.SemesterDAO;
-import com.uzpeng.sign.domain.SemesterDO;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.web.dto.SemesterDTO;
 import org.slf4j.Logger;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SemesterService {
     private static final Logger logger = LoggerFactory.getLogger(SemesterService.class);
+
     @Autowired
     private SemesterDAO semesterDAO;
 
@@ -25,4 +26,7 @@ public class SemesterService {
         semesterDAO.addSemester(ObjectTranslateUtil.semesterDTOToSemesterDO(semesterDTO));
     }
 
+    public SemesterBO getSemester(){
+        return semesterDAO.getSemester();
+    }
 }

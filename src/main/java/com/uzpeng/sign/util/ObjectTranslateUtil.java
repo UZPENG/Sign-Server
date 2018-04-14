@@ -1,10 +1,7 @@
 package com.uzpeng.sign.util;
 
 import com.uzpeng.sign.domain.*;
-import com.uzpeng.sign.web.dto.CourseDTO;
-import com.uzpeng.sign.web.dto.RegisterDTO;
-import com.uzpeng.sign.web.dto.SemesterDTO;
-import com.uzpeng.sign.web.dto.TeacherDTO;
+import com.uzpeng.sign.web.dto.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -84,5 +81,22 @@ public class ObjectTranslateUtil {
         return courseTimeList;
     }
 
+    public static StudentDO studentDTOToStudentDO(StudentDTO studentDTO){
+        StudentDO studentDO = new StudentDO();
 
+        studentDO.setName(studentDTO.getName());
+        studentDO.setClassInfo(studentDTO.getClassInfo());
+        studentDO.setNum(studentDTO.getNum());
+
+        return studentDO;
+    }
+
+   public static LoginDTO passwordDTOToLoginDTO(PasswordDTO passwordDTO){
+       LoginDTO loginDTO = new LoginDTO();
+
+       loginDTO.setUsername(passwordDTO.getUserName());
+       loginDTO.setPassword(passwordDTO.getOldPassword());
+
+       return loginDTO;
+   }
 }

@@ -1,23 +1,19 @@
 package com.uzpeng.sign.web;
 
+import com.uzpeng.sign.config.StatusConfig;
 import com.uzpeng.sign.domain.RoleDO;
-import com.uzpeng.sign.domain.SessionAttribute;
+import com.uzpeng.sign.support.SessionAttribute;
 import com.uzpeng.sign.domain.UserDO;
-import com.uzpeng.sign.interceptor.AuthenticatedInterceptor;
 import com.uzpeng.sign.service.UserService;
-import com.uzpeng.sign.util.CommonResponseHandler;
-import com.uzpeng.sign.util.SessionStoreKey;
-import com.uzpeng.sign.util.UserMap;
-import com.uzpeng.sign.util.VerifyCodeGenerator;
-import com.uzpeng.sign.validation.AuthenticatedRequest;
+import com.uzpeng.sign.util.*;
 import com.uzpeng.sign.web.dto.EmailDTO;
 import com.uzpeng.sign.web.dto.LoginDTO;
+import com.uzpeng.sign.web.dto.PasswordDTO;
 import com.uzpeng.sign.web.dto.RegisterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
@@ -45,7 +42,7 @@ public class UserController {
     @Autowired
     private Environment env;
 
-    @RequestMapping(value = "/v1/register/verify", method = RequestMethod.GET,
+    @RequestMapping(value = "/v1/register/verify", method = RequestMethod.POST,
             produces = "application/json;charset=utf-8")
     @ResponseBody
     public String sendVerifyCode(@Valid EmailDTO emailDTO, HttpSession session, HttpServletRequest request,
@@ -71,10 +68,12 @@ public class UserController {
             userService.sendVerifyCodeByEmail(email, verifyCode);
 
             response.setStatus(200);
-            return CommonResponseHandler.handleResponse(env.getProperty("msg.register.verified"),  env.getProperty("link.register"));
+            return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                    env.getProperty("msg.register.verified"),  env.getProperty("link.register"));
         }else {
             response.setStatus(403);
-            return CommonResponseHandler.handleResponse(env.getProperty("msg.email.invalid"),  env.getProperty("link.host"));
+            return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                    env.getProperty("msg.email.invalid"),  env.getProperty("link.host"));
         }
     }
 
@@ -83,12 +82,14 @@ public class UserController {
     public String register(@Valid final RegisterDTO registerDTO, HttpSession session, HttpServletResponse response){
         boolean isValid = userService.checkEmailAddress(registerDTO.getEmail());
         if(!isValid){
-            return CommonResponseHandler.handleResponse(env.getProperty("msg.email.invalid"),  env.getProperty("link.host"));
+            return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                    env.getProperty("msg.email.invalid"),  env.getProperty("link.host"));
         }
 
         SessionAttribute verifyCodeAttr = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_VERIFY_CODE);
 
-        String errorMsg =  CommonResponseHandler.handleResponse(env.getProperty("msg.register.verify.error"),  env.getProperty("link.host"));
+        String errorMsg =  CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                env.getProperty("msg.register.verify.error"),  env.getProperty("link.host"));
         if(verifyCodeAttr == null){
             return errorMsg;
         }
@@ -111,40 +112,51 @@ public class UserController {
 
         session.removeAttribute(SessionStoreKey.KEY_VERIFY_CODE);
 
-        return CommonResponseHandler.handleResponse(
+        return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
                 env.getProperty("msg.register.success"),  env.getProperty("link.login"));
     }
 
     @RequestMapping(value = "/v1/login", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
-    public String login(@Valid LoginDTO loginDTO, HttpServletRequest request, HttpServletResponse response,
+    public String login( HttpServletRequest request, HttpServletResponse response,
                         HttpSession session){
 
-        logger.info("start check password!...");
-        Integer id = userService.loginCheck(loginDTO);
-        logger.info("finish check password, start set cookie...");
+        try {
+            String json = SerializeUtil.readStringFromReader(request.getReader());
+            LoginDTO loginDTO = SerializeUtil.fromJson(json, LoginDTO.class);
 
-        if(id != null) {
-            String cookieValue = Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes());
-            SessionAttribute authInfo = new SessionAttribute(cookieValue, LocalDateTime.MAX);
-            session.setAttribute(SessionStoreKey.KEY_AUTH, authInfo);
+            logger.info("start check password!...");
+            Integer id = userService.loginCheck(loginDTO);
+            logger.info("finish check password, start set cookie...");
 
-            Cookie cookie = new Cookie(SessionStoreKey.KEY_AUTH, cookieValue);
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
+            if(id != null) {
+                String cookieValue = Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes());
+                SessionAttribute authInfo = new SessionAttribute(cookieValue, LocalDateTime.MAX);
+                session.setAttribute(SessionStoreKey.KEY_AUTH, authInfo);
 
-            RoleDO roleDO = userService.getRole(id);
-            UserMap.putId(cookieValue, roleDO);
+                Cookie cookie = new Cookie(SessionStoreKey.KEY_AUTH, cookieValue);
+                cookie.setPath("/");
+                cookie.setHttpOnly(true);
+                response.addCookie(cookie);
 
-            logger.info("Login successfully! user is is "+roleDO.getRoleId());
+                RoleDO roleDO = userService.getRole(id);
+                UserMap.putId(cookieValue, roleDO);
 
-            return CommonResponseHandler.handleResponse(
-                    env.getProperty("msg.login.success"),  env.getProperty("link.login"));
-        } else {
-            return CommonResponseHandler.handleResponse(
-                    env.getProperty("msg.login.error"),  env.getProperty("link.host"));
+                logger.info("Login successfully! user is is "+roleDO.getRoleId());
+
+                return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                        env.getProperty("msg.login.success"),  env.getProperty("link.login"));
+            } else {
+                response.setStatus(404);
+                return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                        env.getProperty("msg.login.error"),  env.getProperty("link.host"));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        response.setStatus(404);
+        return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                env.getProperty("msg.login.error"),  env.getProperty("link.host"));
     }
 
     @RequestMapping(value = "/v1/user/{id}", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
@@ -164,7 +176,30 @@ public class UserController {
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
 
-        return CommonResponseHandler.handleResponse(
+        return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
                 env.getProperty("msg.logout.success"),  env.getProperty("link.login"));
     }
+
+    @RequestMapping(value = "/v1/user/password", method = RequestMethod.PUT, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String updatePassword(HttpServletRequest request, HttpSession session){
+        try{
+            String json = SerializeUtil.readStringFromReader(request.getReader());
+            PasswordDTO passwordDTO = SerializeUtil.fromJson(json, PasswordDTO.class);
+
+            Integer id = userService.loginCheck(ObjectTranslateUtil.passwordDTOToLoginDTO(passwordDTO));
+            if(id !=null){
+                userService.updatePassword(id, passwordDTO.getNewPassword());
+            } else {
+                return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                        env.getProperty("status.failed"),  env.getProperty("link.host"));
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                env.getProperty("status.failed"),  env.getProperty("link.host"));
+    }
+
+
 }

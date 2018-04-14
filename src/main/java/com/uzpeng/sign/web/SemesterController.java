@@ -1,6 +1,8 @@
 package com.uzpeng.sign.web;
 
+import com.uzpeng.sign.dao.bo.SemesterBO;
 import com.uzpeng.sign.service.SemesterService;
+import com.uzpeng.sign.util.CommonResponseHandler;
 import com.uzpeng.sign.util.SerializeUtil;
 import com.uzpeng.sign.web.dto.SemesterDTO;
 import org.slf4j.Logger;
@@ -42,5 +44,21 @@ public class SemesterController {
 
         //todo 插入学期返回结果
         return "{}";
+    }
+
+    @RequestMapping(value = "/v1/semester", method = RequestMethod.GET,
+            produces="application/json;charset=utf-8")
+    @ResponseBody
+    public String getSemester(HttpServletRequest request, HttpServletResponse response){
+        try {
+            SemesterBO semesterBO = semesterService.getSemester();
+
+            return SerializeUtil.toJson(semesterBO, SemesterBO.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

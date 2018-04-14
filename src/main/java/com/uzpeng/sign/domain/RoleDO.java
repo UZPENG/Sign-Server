@@ -4,7 +4,7 @@ package com.uzpeng.sign.domain;
  * @author serverliu on 2018/4/11.
  */
 public class RoleDO {
-    private Integer roleId;
+    private Integer role_id;
     private String role;
 
     public String getRole() {
@@ -16,10 +16,10 @@ public class RoleDO {
     }
 
     public Integer getRoleId() {
-        return roleId;
+        return role_id;
     }
 
     public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
+        this.role_id = roleId;
     }
 }

@@ -17,9 +17,14 @@
         <mvc:interceptor>
             <mvc:mapping path="/**" />
             <mvc:exclude-mapping path="/v1/login" />
+            <mvc:exclude-mapping path="/errors" />
             <mvc:exclude-mapping path="/v1/register" />
             <mvc:exclude-mapping path="/v1/register/*" />
             <bean class="com.uzpeng.sign.interceptor.AuthenticatedInterceptor" />
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="com.uzpeng.sign.interceptor.CrossSiteInterceptor" />
         </mvc:interceptor>
     </mvc:interceptors>
 

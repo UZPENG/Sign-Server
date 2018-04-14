@@ -10,8 +10,8 @@ public class UserDO {
     private String name;
     private String password;
     private String email;
-    private LocalDateTime registerTime;
-    private int roleId;
+    private LocalDateTime register_time;
+    private int role_id;
     private String role;
 
     public int getId() {
@@ -23,19 +23,19 @@ public class UserDO {
     }
 
     public LocalDateTime getRegisterTime() {
-        return registerTime;
+        return register_time;
     }
 
     public void setRegisterTime(LocalDateTime registerTime) {
-        this.registerTime = registerTime;
+        this.register_time = registerTime;
     }
 
     public int getRoleId() {
-        return roleId;
+        return role_id;
     }
 
     public void setRoleId(int roleId) {
-        this.roleId = roleId;
+        this.role_id = roleId;
     }
 
     public String getRole() {

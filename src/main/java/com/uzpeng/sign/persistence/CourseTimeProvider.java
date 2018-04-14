@@ -15,8 +15,8 @@ public class CourseTimeProvider {
 
         String statement =  "INSERT INTO course_time(course_id, course_weekday, course_section_start," +
                 "course_section_end, loc) VALUES";
-        MessageFormat messageFormat = new MessageFormat("(#'{'list[{0}].courseId}, #'{'list[{0}].courseWeekday}," +
-                " #'{'list[{0}].courseSectionStart}, #'{'list[{0}].courseSectionEnd}, #'{'list[{0}].loc})");
+        MessageFormat messageFormat = new MessageFormat("(#'{'list[{0}].courseId}, #'{'list[{0}].course_weekday}," +
+                " #'{'list[{0}].course_section_start}, #'{'list[{0}].course_section_end}, #'{'list[{0}].loc})");
 
         StringBuilder statementBuilder = new StringBuilder();
         statementBuilder.append(statement);

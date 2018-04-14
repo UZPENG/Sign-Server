@@ -23,6 +23,10 @@ public class SerializeUtil {
         return gson.fromJson(jsonString, clazz);
     }
 
+    public static <T> String toJson(Object obj, Class<T> clazz){
+        return gson.toJson(obj, clazz);
+    }
+
     public static String readStringFromReader(Reader reader){
         BufferedReader bufReader = new BufferedReader(reader);
         try {

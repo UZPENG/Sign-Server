@@ -1,7 +1,7 @@
 package com.uzpeng.sign.util;
 
-import com.uzpeng.sign.domain.Coordinate;
-import com.uzpeng.sign.domain.Probability;
+import com.uzpeng.sign.support.Coordinate;
+import com.uzpeng.sign.support.Probability;
 
 import java.util.ArrayList;
 

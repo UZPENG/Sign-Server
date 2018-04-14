@@ -5,14 +5,14 @@ package com.uzpeng.sign.domain;
  */
 public class CourseDO {
     private Integer id;
-    private String courseNum;
+    private String course_num;
     private String name;
     private Integer semester;
-    private Integer teacherId;
+    private Integer teacher_id;
     private Integer credit;
     private Integer amount;
-    private Integer startWeek;
-    private Integer endWeek;
+    private Integer start_week;
+    private Integer end_week;
 
     public Integer getId() {
         return id;
@@ -23,11 +23,11 @@ public class CourseDO {
     }
 
     public String getCourseNum() {
-        return courseNum;
+        return course_num;
     }
 
     public void setCourseNum(String courseNum) {
-        this.courseNum = courseNum;
+        this.course_num = courseNum;
     }
 
     public String getName() {
@@ -47,11 +47,11 @@ public class CourseDO {
     }
 
     public Integer getTeacherId() {
-        return teacherId;
+        return teacher_id;
     }
 
     public void setTeacherId(Integer teacherId) {
-        this.teacherId = teacherId;
+        this.teacher_id = teacherId;
     }
 
     public Integer getCredit() {
@@ -71,18 +71,18 @@ public class CourseDO {
     }
 
     public Integer getStartWeek() {
-        return startWeek;
+        return start_week;
     }
 
     public void setStartWeek(Integer startWeek) {
-        this.startWeek = startWeek;
+        this.start_week = startWeek;
     }
 
     public Integer getEndWeek() {
-        return endWeek;
+        return end_week;
     }
 
     public void setEndWeek(Integer endWeek) {
-        this.endWeek = endWeek;
+        this.end_week = endWeek;
     }
 }

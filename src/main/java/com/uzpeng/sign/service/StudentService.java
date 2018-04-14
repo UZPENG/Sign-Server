@@ -2,7 +2,8 @@ package com.uzpeng.sign.service;
 
 import com.uzpeng.sign.dao.StudentDAO;
 import com.uzpeng.sign.domain.StudentDO;
-import com.uzpeng.sign.excpetion.InvalidFileException;
+import com.uzpeng.sign.exception.InvalidFileException;
+import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.web.dto.StudentDTO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -31,19 +32,19 @@ public class StudentService {
     @Autowired
     private StudentDAO studentDAO;
 
-    public boolean insertStudentsByFile(InputStream excelFileStream, String fiLeName, Integer courseId){
+    public void insertStudentsByFile(InputStream excelFileStream, String fiLeName, Integer courseId){
         List<StudentDO> studentDOList = parseExcelFile(excelFileStream, fiLeName);
+
         if(studentDOList !=null) {
             studentDAO.insertStudents(studentDOList, courseId);
-            return true;
         } else {
-            return false;
+            logger.warn("student list is empty!");
         }
     }
 
-    public void insertStudent(StudentDTO studentDTO){
-        //todo
-//        studentDAO.insertStudents(studentDTO);
+    public void insertStudent(StudentDTO studentDTO, Integer courseId){
+        studentDAO.insertStudent(ObjectTranslateUtil.studentDTOToStudentDO(studentDTO),
+                courseId);
     }
 
     private List<StudentDO> parseExcelFile(InputStream excelFileStream, String filename) throws InvalidFileException{
@@ -76,7 +77,7 @@ public class StudentService {
                     String studentClass = studentNameCell.getStringCellValue();
                     StudentDO tmpStudentDO = new StudentDO();
                     tmpStudentDO.setName(studentName);
-                    tmpStudentDO.setNum(Integer.parseInt(studentNum));
+                    tmpStudentDO.setNum(studentNum);
                     tmpStudentDO.setClassInfo(studentClass);
                     studentDOList.add(tmpStudentDO);
                 } else {

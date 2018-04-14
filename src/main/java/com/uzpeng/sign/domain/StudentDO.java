@@ -5,27 +5,27 @@ package com.uzpeng.sign.domain;
  */
 public class StudentDO {
     private Integer id;
-    private Integer num;
+    private String num;
     private String name;
-    private String classInfo;
-    private String collegeId;
-    private Integer entranceYear;
+    private String class_info;
+    private String college_id;
+    private Integer entrance_year;
     private String note;
 
     public String getCollegeId() {
-        return collegeId;
+        return college_id;
     }
 
     public void setCollegeId(String collegeId) {
-        this.collegeId = collegeId;
+        this.college_id = collegeId;
     }
 
     public Integer getEntranceYear() {
-        return entranceYear;
+        return entrance_year;
     }
 
     public void setEntranceYear(Integer entranceYear) {
-        this.entranceYear = entranceYear;
+        this.entrance_year = entranceYear;
     }
 
     public String getNote() {
@@ -44,11 +44,11 @@ public class StudentDO {
         this.id = id;
     }
 
-    public Integer getNum() {
+    public String getNum() {
         return num;
     }
 
-    public void setNum(Integer num) {
+    public void setNum(String num) {
         this.num = num;
     }
 
@@ -61,10 +61,10 @@ public class StudentDO {
     }
 
     public String getClassInfo() {
-        return classInfo;
+        return class_info;
     }
 
     public void setClassInfo(String classInfo) {
-        this.classInfo = classInfo;
+        this.class_info = classInfo;
     }
 }

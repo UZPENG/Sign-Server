@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Select;
  * @author serverliu on 2018/4/10.
  */
 public interface SemesterMapper {
-    @Insert("INSERT INTO semester VALUES (#{semester.id}, #{semester.startTime}, #{semester.endTime})")
+    @Insert("INSERT INTO semester VALUES (#{semester.id}, #{semester.start_time}, #{semester.end_time})")
     void addSemester(@Param("semester") SemesterDO semesterDO);
 
     @Select("SELECT * FROM semester")

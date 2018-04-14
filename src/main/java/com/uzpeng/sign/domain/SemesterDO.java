@@ -7,8 +7,17 @@ import java.time.LocalDateTime;
  */
 public class SemesterDO {
     private Integer id;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private String name;
+    private LocalDateTime start_time;
+    private LocalDateTime end_time;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Integer getId() {
         return id;
@@ -19,18 +28,18 @@ public class SemesterDO {
     }
 
     public LocalDateTime getStartTime() {
-        return startTime;
+        return start_time;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
+    public void setStartTime(LocalDateTime start_time) {
+        this.start_time = start_time;
     }
 
     public LocalDateTime getEndTime() {
-        return endTime;
+        return end_time;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
+    public void setEndTime(LocalDateTime end_time) {
+        this.end_time = end_time;
     }
 }

@@ -1,11 +1,12 @@
 package com.uzpeng.sign.dao;
 
-import com.uzpeng.sign.dao.vo.CourseVO;
+import com.uzpeng.sign.dao.bo.CourseBO;
+import com.uzpeng.sign.dao.bo.CourseListBO;
 import com.uzpeng.sign.domain.CourseDO;
 import com.uzpeng.sign.domain.CourseTimeDO;
 import com.uzpeng.sign.persistence.CourseMapper;
 import com.uzpeng.sign.persistence.CourseTimeMapper;
-import com.uzpeng.sign.web.dto.CourseDTO;
+import com.uzpeng.sign.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -28,37 +29,46 @@ public class CourseDAO {
         return courseDO.getId();
     }
 
-    public CourseVO getCourseList(Integer teacherId){
-        List<CourseDTO> courseDTOList = new ArrayList<>();
+    public CourseListBO getCourseList(Integer teacherId){
+        List<CourseBO> currentCourseList = new ArrayList<>();
+        List<CourseBO> historyCourseList = new ArrayList<>();
 
         List<CourseDO> courseDOList = courseMapper.getCourseByTeacherId(teacherId);
         for (CourseDO courseDO :
                 courseDOList) {
             List<CourseTimeDO> courseTimeDOList = courseTimeMapper.getCourseTimeByCourseId(courseDO.getId());
 
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseName(courseDO.getName());
-            courseDTO.setCourseNum(courseDO.getCourseNum());
-            courseDTO.setSemester(String.valueOf(courseDO.getSemester()));
-            courseDTO.setStartWeek(courseDO.getStartWeek());
-            courseDTO.setEndWeek(courseDO.getEndWeek());
+            CourseBO courseBO = new CourseBO();
+            courseBO.setCourseId(courseDO.getId());
+            courseBO.setCourseName(courseDO.getName());
+            courseBO.setCourseNum(courseDO.getCourseNum());
+            courseBO.setSemester(String.valueOf(courseDO.getSemester()));
+            courseBO.setStartWeek(courseDO.getStartWeek());
+            courseBO.setEndWeek(courseDO.getEndWeek());
+            courseBO.setTime(new ArrayList<>());
+            courseBO.setTeacherId(courseDO.getTeacherId());
 
             for (CourseTimeDO courseTimeDO :
                     courseTimeDOList) {
-                CourseDTO.CourseTimeDetail timeDetail = new CourseDTO.CourseTimeDetail();
+                CourseBO.CourseTimeDetail timeDetail = new CourseBO.CourseTimeDetail();
 
                 timeDetail.setStart(courseTimeDO.getCourseSectionStart());
                 timeDetail.setEnd(courseTimeDO.getCourseSectionEnd());
                 timeDetail.setWeekday(courseTimeDO.getCourseWeekday());
                 timeDetail.setLoc(courseTimeDO.getLoc());
 
-                courseDTO.getTime().add(timeDetail);
+                courseBO.getTime().add(timeDetail);
             }
-            courseDTOList.add(courseDTO);
+            if(DateUtil.isHistoryCourse(courseDO.getSemester())) {
+                historyCourseList.add(courseBO);
+            } else {
+                currentCourseList.add(courseBO);
+            }
         }
 
-        CourseVO courseVO = new CourseVO();
-        courseVO.setCourseList(courseDTOList);
+        CourseListBO courseVO = new CourseListBO();
+        courseVO.setCurrentCourseList(currentCourseList);
+        courseVO.setHistoryCourseList(historyCourseList);
         return courseVO;
     }
 }

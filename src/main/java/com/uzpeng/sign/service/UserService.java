@@ -63,4 +63,8 @@ public class UserService {
     public UserDO getUserInfo(String id){
         return userDAO.getUserInfo(Integer.parseInt(id));
     }
+
+    public void updatePassword(Integer id, String newPassword){
+        userDAO.updatePassword(id , newPassword);
+    }
 }

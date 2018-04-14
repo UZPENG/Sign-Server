@@ -1,4 +1,4 @@
-package com.uzpeng.sign.domain;
+package com.uzpeng.sign.support;
 
 /**
  * @author serverliu on 2018/4/10.

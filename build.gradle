@@ -18,9 +18,23 @@ ext {
     mybatisVersion = "3.2.2"
 }
 
+/**
+ * 开发
+ */
 tomcat{
-    httpPort = 8080
+    httpPort = 8088
+    ajpPort = 8888
+    stopPort = 8087
+    contextPath = 'dev'
 }
+
+/**
+ * 稳定版本
+ */
+//tomcat{
+//    httpPort = 8080
+//}
+
 
 buildscript{
     repositories {

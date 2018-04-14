@@ -10,8 +10,8 @@ public interface TeacherMapper {
     @Insert("INSERT INTO teacher(name) VALUES (#{teacher.name}")
     void addTeacher(@Param("teacher")TeacherDO teacherDO);
 
-    @Update("UPDATE ON teacher set name=#{teacher.name},card_num=#{teacher.cardNum},tel_number=#{teacher.telNumber}," +
-            "office_hour=#{teacher.officeHour}, office_loc=#{teacher.officeLoc},note=#{teacher.note},")
+    @Update("UPDATE ON teacher set name=#{teacher.name},card_num=#{teacher.card_num},tel_number=#{teacher.tel_number}," +
+            "office_hour=#{teacher.office_hour}, office_loc=#{teacher.office_loc},note=#{teacher.note},")
     void updateTeacher(@Param("teacher") TeacherDO teacherDO);
 
     @Select("SELECT * FROM teacher WHERE id=#{id}")
