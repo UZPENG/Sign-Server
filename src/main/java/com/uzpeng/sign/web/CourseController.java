@@ -1,6 +1,7 @@
 package com.uzpeng.sign.web;
 
 import com.uzpeng.sign.config.StatusConfig;
+import com.uzpeng.sign.dao.bo.CourseBO;
 import com.uzpeng.sign.dao.bo.CourseListBO;
 import com.uzpeng.sign.domain.RoleDO;
 import com.uzpeng.sign.support.SessionAttribute;
@@ -10,6 +11,7 @@ import com.uzpeng.sign.web.dto.CourseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -63,11 +65,19 @@ public class CourseController {
         try {
             SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
             RoleDO role = UserMap.getId((String)auth.getObj());
-            if(role != null && role.getRole().equals(Role.TEACHER)) {
-                BufferedReader reader = request.getReader();
 
-                CourseListBO courseVO = courseService.getCourse(role.getRoleId());
-                return SerializeUtil.toJson(courseVO, CourseListBO.class);
+            if(role != null && role.getRole().equals(Role.TEACHER)) {
+                String courseName = request.getParameter("name");
+
+                if(courseName != null){
+                    CourseListBO courseListBO = courseService.getCourseByName(courseName);
+                    return SerializeUtil.toJson(courseListBO, CourseListBO.class);
+                }else {
+                    BufferedReader reader = request.getReader();
+
+                    CourseListBO courseListBO = courseService.getCourse(role.getRoleId());
+                    return SerializeUtil.toJson(courseListBO, CourseListBO.class);
+                }
             } else {
                 return CommonResponseHandler.handleNoAuthentication(response);
             }
@@ -78,4 +88,75 @@ public class CourseController {
         }
     }
 
+    @RequestMapping(value = "/v1/course/{id}", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String getCourseById(@PathVariable("id")String id, HttpServletRequest request, HttpSession session,
+                                HttpServletResponse response){
+        try {
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+            RoleDO role = UserMap.getId((String)auth.getObj());
+            if(role != null && role.getRole().equals(Role.TEACHER)) {
+                BufferedReader reader = request.getReader();
+
+                Integer courseId = Integer.parseInt(id);
+                CourseBO courseBO = courseService.getCourseById(courseId);
+                return SerializeUtil.toJson(courseBO, CourseBO.class);
+            } else {
+                return CommonResponseHandler.handleNoAuthentication(response);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            return CommonResponseHandler.handleException();
+        }
+    }
+
+    @RequestMapping(value = "/v1/course/{id}", method = RequestMethod.DELETE, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String deleteCourseById(@PathVariable("id")String id, HttpServletRequest request, HttpSession session,
+                                HttpServletResponse response){
+        try {
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+            RoleDO role = UserMap.getId((String)auth.getObj());
+            if(role != null && role.getRole().equals(Role.TEACHER)) {
+                courseService.deleteCourseById(Integer.parseInt(id));
+                return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                        env.getProperty("status.success"),  env.getProperty("link.login"));
+            } else {
+                return CommonResponseHandler.handleNoAuthentication(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return CommonResponseHandler.handleException();
+        }
+    }
+
+    @RequestMapping(value = "/v1/course/{id}", method = RequestMethod.PUT, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String updateCourseById(@PathVariable("id")String id, HttpServletRequest request, HttpSession session,
+                                   HttpServletResponse response){
+        try {
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+            RoleDO role = UserMap.getId((String)auth.getObj());
+            if(role != null && role.getRole().equals(Role.TEACHER)) {
+                BufferedReader reader = request.getReader();
+                String json = SerializeUtil.readStringFromReader(reader);
+                CourseDTO courseDTO = SerializeUtil.fromJson(json, CourseDTO.class);
+
+                courseDTO.setCourseId(id);
+                courseDTO.setTeacherId(role.getRoleId());
+                courseService.updateCourse(courseDTO);
+                return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                        env.getProperty("msg.success"),  env.getProperty("link.doc"));
+            } else {
+                return CommonResponseHandler.handleNoAuthentication(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.setStatus(500);
+            return CommonResponseHandler.handleException();
+        }
+    }
 }

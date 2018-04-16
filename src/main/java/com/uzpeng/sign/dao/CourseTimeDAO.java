@@ -18,4 +18,13 @@ public class CourseTimeDAO {
     public void addCourseTimeList(List<CourseTimeDO> courseTimeDOList){
         mapper.addCourseTimeList(courseTimeDOList);
     }
+
+    public  List<CourseTimeDO> getCourseTimeByCourseId(Integer courseId){
+        return mapper.getCourseTimeByCourseId(courseId);
+    }
+
+    public void deleteCourseTime(Integer courseId){
+        mapper.deleteCourseTime(courseId);
+    }
+
 }

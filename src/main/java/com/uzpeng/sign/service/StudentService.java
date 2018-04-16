@@ -1,6 +1,7 @@
 package com.uzpeng.sign.service;
 
 import com.uzpeng.sign.dao.StudentDAO;
+import com.uzpeng.sign.dao.bo.StudentBOList;
 import com.uzpeng.sign.domain.StudentDO;
 import com.uzpeng.sign.exception.InvalidFileException;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
@@ -45,6 +46,14 @@ public class StudentService {
     public void insertStudent(StudentDTO studentDTO, Integer courseId){
         studentDAO.insertStudent(ObjectTranslateUtil.studentDTOToStudentDO(studentDTO),
                 courseId);
+    }
+
+    public StudentBOList getStudentByCourseId(String courseId){
+        return studentDAO.getStudent(Integer.parseInt(courseId));
+    }
+
+    public void removeStudent(String courseId, String studentId){
+        studentDAO.removeStudent(Integer.parseInt(courseId), Integer.parseInt(studentId));
     }
 
     private List<StudentDO> parseExcelFile(InputStream excelFileStream, String filename) throws InvalidFileException{

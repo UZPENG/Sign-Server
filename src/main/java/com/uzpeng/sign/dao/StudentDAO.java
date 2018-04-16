@@ -1,13 +1,15 @@
 package com.uzpeng.sign.dao;
 
 import com.uzpeng.sign.dao.bo.StudentBO;
+import com.uzpeng.sign.dao.bo.StudentBOList;
 import com.uzpeng.sign.domain.SelectiveCourseDO;
 import com.uzpeng.sign.domain.StudentDO;
 import com.uzpeng.sign.domain.UserDO;
 import com.uzpeng.sign.persistence.SelectiveCourseMapper;
 import com.uzpeng.sign.persistence.StudentMapper;
-import com.uzpeng.sign.persistence.UserMapper;
+import com.uzpeng.sign.service.UserService;
 import com.uzpeng.sign.util.CryptoUtil;
+import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.util.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +25,14 @@ import java.util.List;
  */
 @Repository
 public class StudentDAO {
-
     private static final Logger logger = LoggerFactory.getLogger(StudentDAO.class);
 
     @Autowired
     private StudentMapper studentMapper;
     @Autowired
-    private UserMapper userMapper;
+    private UserDAO userDAO;
     @Autowired
-    private SelectiveCourseMapper selectiveCourseMapper;
+    private SelectiveCourseDAO selectiveCourseDAO;
 
     public void insertStudents(List<StudentDO> students, Integer courseId){
         logger.info("student list's size is " + students.size());
@@ -65,7 +66,7 @@ public class StudentDAO {
                 users.add(tmpUser);
             }
             //todo 处理已经存在的异常
-            userMapper.insertUserList(users);
+            userDAO.insertUserList(users);
         }
 
         insertSelectiveCourse(students, courseId);
@@ -78,10 +79,24 @@ public class StudentDAO {
         insertStudents(student, courseId);
     }
 
-    public List<StudentBO> getStudent(Integer courseId){
-//        List<StudentDO> studentDOList = studentMapper.getStudent(1);
-        //todo 
-        return null;
+    public StudentBOList getStudent(Integer courseId){
+        List<Integer> studentId = selectiveCourseDAO.getStudentIdByCourseId(courseId);
+        List<StudentDO> studentDOs = studentMapper.getStudentListByStudentId(studentId);
+
+        List<StudentBO> studentBOs = new ArrayList<>();
+        for (StudentDO studentDO :
+                studentDOs) {
+            studentBOs.add(ObjectTranslateUtil.studentDOToStudentBO(studentDO));
+        }
+
+        StudentBOList studentBOList = new StudentBOList();
+        studentBOList.setStudentList(studentBOs);
+
+        return studentBOList;
+    }
+
+    public void removeStudent(Integer courseId, Integer studentId){
+        selectiveCourseDAO.removeStudent(courseId, studentId);
     }
 
     private void insertSelectiveCourse(List<StudentDO> studentDOS, Integer courseId){
@@ -102,6 +117,6 @@ public class StudentDAO {
 
             selectiveCourseDOS.add(selectiveCourseDO);
         }
-        selectiveCourseMapper.addSelectiveCourseList(selectiveCourseDOS);
+        selectiveCourseDAO.addSelectiveCourseList(selectiveCourseDOS);
     }
 }

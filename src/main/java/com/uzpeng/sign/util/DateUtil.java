@@ -1,13 +1,18 @@
 package com.uzpeng.sign.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author serverliu on 2018/4/13.
  */
 public class DateUtil {
+    private static Logger logger = LoggerFactory.getLogger(DateUtil.class);
 
     public static boolean isHistoryCourse(Integer semester){
         int year = semester / 10;
@@ -29,16 +34,27 @@ public class DateUtil {
         String endYear= String.valueOf(year+1);
         String semesterNum = num == 1 ? "一" : "二";
 
-        messageFormat.format(new Object[]{startYear, endYear, semesterNum});
-
-        return messageFormat.toString();
+        return messageFormat.format(new Object[]{startYear, endYear, semesterNum});
     }
 
     public static Integer semesterNameToId(String name){
-        String pattern = "[1-9][0-9]+3-[1-9][0-9]+3\\w第[1,2]学期";
+        String patternStr = "^[1-9]\\d{3}-[1-9]\\d{3}\\s第[一二]学期$";
 
-        //todo
-        return null;
+        Pattern pattern = Pattern.compile(patternStr);
+        Matcher matcher = pattern.matcher(patternStr);
+        if(matcher.matches()){
+            String[] data = pattern.split("\\s");
+
+            String yearStr = data[0].substring(0,3);
+            Character semesterNumChar = data[1].charAt(1);
+
+            int year = Integer.parseInt(yearStr);
+            int semesterNum = semesterNumChar == '一' ? 1 : 2;
+
+            return year * 10 + semesterNum;
+        } else {
+            return null;
+        }
     }
 
 }

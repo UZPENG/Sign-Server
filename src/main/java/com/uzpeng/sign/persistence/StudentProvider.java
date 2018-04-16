@@ -17,7 +17,7 @@ public class StudentProvider {
 
         students = (List) list.get("list");
         StringBuilder statement = new StringBuilder();
-        statement.append("INSERT INTO student(student_num, name, class) VALUES");
+        statement.append("INSERT INTO student(student_num, name, class_info) VALUES");
         MessageFormat messageFormat = new MessageFormat("(#'{'list[{0}].num}, #'{'list[{0}].name}," +
                 " #'{'list[{0}].class_info})");
         for (int i = 0; i < students.size(); i++) {

@@ -15,7 +15,15 @@ public class SelectiveCourseDAO {
     @Autowired
     private SelectiveCourseMapper mapper;
 
-    public void addSelectiveCourse(List<SelectiveCourseDO> selectiveCourseDOs){
+    public void addSelectiveCourseList(List<SelectiveCourseDO> selectiveCourseDOs){
         mapper.addSelectiveCourseList(selectiveCourseDOs);
+    }
+
+    public List<Integer> getStudentIdByCourseId(Integer courseId){
+        return mapper.getStudentIdByCourseId(courseId);
+    }
+
+    public void removeStudent(Integer courseId, Integer studentId){
+        mapper.removeStudent(courseId, studentId);
     }
 }

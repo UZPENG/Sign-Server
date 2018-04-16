@@ -1,6 +1,8 @@
 package com.uzpeng.sign.web;
 
 import com.uzpeng.sign.config.StatusConfig;
+import com.uzpeng.sign.dao.bo.StudentBO;
+import com.uzpeng.sign.dao.bo.StudentBOList;
 import com.uzpeng.sign.domain.RoleDO;
 import com.uzpeng.sign.exception.NoAuthenticatedException;
 import com.uzpeng.sign.support.SessionAttribute;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * @author serverliu on 2018/4/7.
@@ -72,5 +75,37 @@ public class StudentController {
         } else {
             return CommonResponseHandler.handleNoAuthentication(response);
         }
+    }
+
+    @RequestMapping(value = "/v1/course/{courseId}/student", method = RequestMethod.GET,
+            produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String getStudentByCourseId(@PathVariable("courseId")String courseId, HttpServletRequest request,
+                                       HttpServletResponse response){
+        try {
+           StudentBOList studentBOS = studentService.getStudentByCourseId(courseId);
+
+           return SerializeUtil.toJson(studentBOS, StudentBOList.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return CommonResponseHandler.handleException();
+    }
+
+    @RequestMapping(value = "/v1/course/{courseId}/student/{studentId}", method = RequestMethod.DELETE,
+            produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String deleteStudentByCourseId(@PathVariable("courseId")String courseId, HttpServletResponse response,
+                                          HttpServletRequest request, @PathVariable("studentId") String studentId) {
+        try {
+            studentService.removeStudent(courseId, studentId);
+            return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                    env.getProperty("msg.register.verified"), env.getProperty("link.doc"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return CommonResponseHandler.handleNoAuthentication(response);
     }
 }

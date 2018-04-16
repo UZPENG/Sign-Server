@@ -1,5 +1,8 @@
 package com.uzpeng.sign.util;
 
+import com.uzpeng.sign.dao.bo.CourseBO;
+import com.uzpeng.sign.dao.bo.SemesterBO;
+import com.uzpeng.sign.dao.bo.StudentBO;
 import com.uzpeng.sign.domain.*;
 import com.uzpeng.sign.web.dto.*;
 
@@ -38,10 +41,11 @@ public class ObjectTranslateUtil {
         Integer semester = Integer.parseInt(semesterDTO.getSemester());
         Integer startYear = Integer.parseInt(semesterDTO.getStartYear());
 
-        Integer id = startYear * 10 + semester+1;
+        Integer id = startYear * 10 + semester;
 
         semesterDO.setId(id);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
+        semesterDO.setName(DateUtil.semesterIdToName(id));
         semesterDO.setStartTime(LocalDateTime.parse(semesterDTO.getDate().get(0), dateTimeFormatter));
         semesterDO.setEndTime(LocalDateTime.parse(semesterDTO.getDate().get(1), dateTimeFormatter));
 
@@ -51,10 +55,12 @@ public class ObjectTranslateUtil {
     public static CourseDO courseDTOToCourseDO(CourseDTO courseDTO){
         CourseDO courseDO = new CourseDO();
 
+        courseDO.setId(Integer.parseInt(courseDTO.getCourseId()));
         courseDO.setTeacherId(courseDTO.getTeacherId());
         courseDO.setName(courseDTO.getCourseName());
         courseDO.setCourseNum(courseDTO.getCourseNum());
-        courseDO.setSemester(Integer.parseInt(courseDTO.getSemester()));
+        //todo 非法参数处理
+        courseDO.setSemester(DateUtil.semesterNameToId(courseDTO.getSemester()));
         courseDO.setStartWeek(courseDTO.getStartWeek());
         courseDO.setEndWeek(courseDTO.getEndWeek());
 
@@ -98,5 +104,53 @@ public class ObjectTranslateUtil {
        loginDTO.setPassword(passwordDTO.getOldPassword());
 
        return loginDTO;
+   }
+
+   public static SemesterBO semesterDOToSemesterBO(SemesterDO semesterDO){
+       SemesterBO semesterBO = new SemesterBO();
+       semesterBO.setSemesterId(semesterDO.getId());
+       semesterBO.setSemesterName(String.valueOf(semesterDO.getName()));
+       DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
+       semesterBO.setStartTime(semesterDO.getStartTime().format(dateTimeFormatter));
+       semesterBO.setEndTime(semesterDO.getEndTime().format(dateTimeFormatter));
+
+       return semesterBO;
+   }
+
+   public static StudentBO studentDOToStudentBO(StudentDO studentDO){
+        StudentBO studentBO = new StudentBO();
+
+        studentBO.setId(studentDO.getId());
+        studentBO.setName(studentDO.getName());
+        studentBO.setStudentNum(studentDO.getNum());
+        studentBO.setClassInfo(studentDO.getClassInfo());
+
+        return studentBO;
+   }
+
+   public static CourseBO courseDOToCourseBO(CourseDO courseDO, List<CourseTimeDO> courseTimeDOList,
+                                             SemesterBO semesterBO){
+       CourseBO courseBO = new CourseBO();
+       courseBO.setCourseId(courseDO.getId());
+       courseBO.setCourseName(courseDO.getName());
+       courseBO.setCourseNum(courseDO.getCourseNum());
+       courseBO.setSemester(semesterBO.getSemesterName());
+       courseBO.setStartWeek(courseDO.getStartWeek());
+       courseBO.setEndWeek(courseDO.getEndWeek());
+       courseBO.setTime(new ArrayList<>());
+       courseBO.setTeacherId(courseDO.getTeacherId());
+
+       for (CourseTimeDO courseTimeDO :
+               courseTimeDOList) {
+           CourseBO.CourseTimeDetail timeDetail = new CourseBO.CourseTimeDetail();
+
+           timeDetail.setStart(courseTimeDO.getCourseSectionStart());
+           timeDetail.setEnd(courseTimeDO.getCourseSectionEnd());
+           timeDetail.setWeekday(courseTimeDO.getCourseWeekday());
+           timeDetail.setLoc(courseTimeDO.getLoc());
+
+           courseBO.getTime().add(timeDetail);
+       }
+       return courseBO;
    }
 }

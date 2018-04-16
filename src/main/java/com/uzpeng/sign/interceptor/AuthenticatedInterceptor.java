@@ -41,7 +41,7 @@ public class AuthenticatedInterceptor implements HandlerInterceptor {
         }
         logger.info("no authentication information!");
         response.setStatus(404);
-        response.sendRedirect(request.getContextPath()+"/v1/login");
+//        response.sendRedirect(request.getContextPath()+"/v1/login");
         return false;
     }
 

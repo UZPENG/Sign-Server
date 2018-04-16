@@ -1,14 +1,19 @@
 package com.uzpeng.sign.dao;
 
 import com.uzpeng.sign.dao.bo.SemesterBO;
+import com.uzpeng.sign.dao.bo.SemesterBOList;
 import com.uzpeng.sign.domain.SemesterDO;
 import com.uzpeng.sign.persistence.SemesterMapper;
+import com.uzpeng.sign.util.ObjectTranslateUtil;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author serverliu on 2018/4/10.
@@ -24,17 +29,34 @@ public class SemesterDAO {
         semesterMapper.addSemester(semesterDO);
     }
 
-    public SemesterBO getSemester(){
-        SemesterDO semesterDO = semesterMapper.getSemester();
+    public SemesterBOList getSemester(){
+        List<SemesterDO> semesterDOs = semesterMapper.getSemester();
+        List<SemesterBO> semesterBOs = new ArrayList<>();
 
-        logger.info("semester startTime is "+semesterDO.getStartTime());
+        for (SemesterDO semesterDO:
+             semesterDOs) {
+            logger.info("semester startTime is "+semesterDO.getStartTime());
 
-        SemesterBO semesterBO = new SemesterBO();
-        semesterBO.setSemesterName(String.valueOf(semesterDO.getId()));
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
-        semesterBO.setStartTime(semesterDO.getStartTime().format(dateTimeFormatter));
-        semesterBO.setEndTime(semesterDO.getEndTime().format(dateTimeFormatter));
+            semesterBOs.add(ObjectTranslateUtil.semesterDOToSemesterBO(semesterDO));
+        }
 
-        return semesterBO;
+        SemesterBOList semesterBOList = new SemesterBOList();
+        semesterBOList.setSemesterList(semesterBOs);
+
+        return semesterBOList;
+    }
+
+    public SemesterBO getSemesterById(Integer id){
+        SemesterDO semesterDO = semesterMapper.getSemesterById(id);
+
+        return ObjectTranslateUtil.semesterDOToSemesterBO(semesterDO);
+    }
+
+    public void updateSemester(SemesterDO semesterDO){
+        semesterMapper.updateSemester(semesterDO);
+    }
+
+    public void deleteSemester(Integer id){
+        semesterMapper.deleteSemester(id);
     }
 }
