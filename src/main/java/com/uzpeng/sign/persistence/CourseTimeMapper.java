@@ -10,10 +10,14 @@ import java.util.List;
  */
 public interface CourseTimeMapper {
     @InsertProvider(type = CourseTimeProvider.class, method = "insertCourseTimeList")
+    @Options(useGeneratedKeys = true)
     void addCourseTimeList(@Param("list")List<CourseTimeDO> c);
 
     @Select("SELECT * FROM course_time WHERE course_id=#{id}")
     List<CourseTimeDO> getCourseTimeByCourseId(@Param("id") int courseId);
+
+    @Select("SELECT * FROM course_time WHERE id=#{id}")
+    CourseTimeDO getCourseTimeById(@Param("id") Integer courseTimeId);
 
     @Delete("DELETE FROM course_time WHERE course_id=#{id} ")
     void deleteCourseTime(@Param("id") Integer id);

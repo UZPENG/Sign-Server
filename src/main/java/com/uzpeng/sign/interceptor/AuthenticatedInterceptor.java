@@ -20,12 +20,13 @@ public class AuthenticatedInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        logger.info("start checking authentication!");
+
         SessionAttribute authInfo = (SessionAttribute)request.getSession().getAttribute(SessionStoreKey.KEY_AUTH);
 
         if(authInfo == null){
             logger.info("no authentication information!");
             response.setStatus(404);
-            response.sendRedirect(request.getContextPath()+"/v1/login");
             return false;
         }
 
@@ -41,13 +42,11 @@ public class AuthenticatedInterceptor implements HandlerInterceptor {
         }
         logger.info("no authentication information!");
         response.setStatus(404);
-//        response.sendRedirect(request.getContextPath()+"/v1/login");
         return false;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
     }
 
     @Override

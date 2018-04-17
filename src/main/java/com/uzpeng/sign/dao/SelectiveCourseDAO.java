@@ -26,4 +26,12 @@ public class SelectiveCourseDAO {
     public void removeStudent(Integer courseId, Integer studentId){
         mapper.removeStudent(courseId, studentId);
     }
+
+    public void removeCourse(Integer courseId){
+        mapper.deleteByCourseId(courseId);
+    }
+
+    public Integer getStudentCount(Integer courseId){
+        return mapper.getStudentIdCountByCourseId(courseId);
+    }
 }

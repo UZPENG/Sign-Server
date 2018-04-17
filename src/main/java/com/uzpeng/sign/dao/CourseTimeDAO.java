@@ -23,6 +23,10 @@ public class CourseTimeDAO {
         return mapper.getCourseTimeByCourseId(courseId);
     }
 
+    public  CourseTimeDO getCourseTimeById(Integer courseTimeId){
+        return mapper.getCourseTimeById(courseTimeId);
+    }
+
     public void deleteCourseTime(Integer courseId){
         mapper.deleteCourseTime(courseId);
     }

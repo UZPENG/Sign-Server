@@ -3,7 +3,10 @@ package com.uzpeng.sign.web;
 import com.uzpeng.sign.config.StatusConfig;
 import com.uzpeng.sign.dao.bo.CourseBO;
 import com.uzpeng.sign.dao.bo.CourseListBO;
+import com.uzpeng.sign.dao.bo.CourseTimeListBO;
+import com.uzpeng.sign.dao.bo.StudentBOList;
 import com.uzpeng.sign.domain.RoleDO;
+import com.uzpeng.sign.exception.CommonExceptionHandler;
 import com.uzpeng.sign.support.SessionAttribute;
 import com.uzpeng.sign.service.CourseService;
 import com.uzpeng.sign.util.*;
@@ -11,16 +14,15 @@ import com.uzpeng.sign.web.dto.CourseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.util.Base64;
 
 /**
  * @author serverliu on 2018/4/11.
@@ -50,7 +52,6 @@ public class CourseController {
                 return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
                         env.getProperty("msg.success"),  env.getProperty("link.doc"));
             } else {
-
                 return CommonResponseHandler.handleNoAuthentication(response);
             }
         } catch (IOException e) {
@@ -70,13 +71,14 @@ public class CourseController {
                 String courseName = request.getParameter("name");
 
                 if(courseName != null){
-                    CourseListBO courseListBO = courseService.getCourseByName(courseName);
-                    return SerializeUtil.toJson(courseListBO, CourseListBO.class);
+                    String decodeCourseName = URLDecoder.decode(courseName, "utf-8");
+                    CourseListBO courseListBO = courseService.getCourseByName(decodeCourseName);
+                    return CommonResponseHandler.handleResponse(courseListBO, CourseListBO.class);
                 }else {
                     BufferedReader reader = request.getReader();
 
                     CourseListBO courseListBO = courseService.getCourse(role.getRoleId());
-                    return SerializeUtil.toJson(courseListBO, CourseListBO.class);
+                    return CommonResponseHandler.handleResponse(courseListBO, CourseListBO.class);
                 }
             } else {
                 return CommonResponseHandler.handleNoAuthentication(response);
@@ -100,7 +102,7 @@ public class CourseController {
 
                 Integer courseId = Integer.parseInt(id);
                 CourseBO courseBO = courseService.getCourseById(courseId);
-                return SerializeUtil.toJson(courseBO, CourseBO.class);
+                return CommonResponseHandler.handleResponse(courseBO, CourseBO.class);
             } else {
                 return CommonResponseHandler.handleNoAuthentication(response);
             }
@@ -156,6 +158,28 @@ public class CourseController {
             e.printStackTrace();
 
             response.setStatus(500);
+            return CommonResponseHandler.handleException();
+        }
+    }
+
+
+    @RequestMapping(value = "/v1/course/{id}/time", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String getCourseTimeById(@PathVariable("id")String id, HttpServletRequest request, HttpSession session,
+                                HttpServletResponse response){
+        try {
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+            RoleDO role = UserMap.getId((String)auth.getObj());
+            if(role != null && role.getRole().equals(Role.TEACHER)) {
+                Integer courseId = Integer.parseInt(id);
+                CourseTimeListBO courseTimeListBO = courseService.getCourTimeById(courseId);
+                return CommonResponseHandler.handleResponse(courseTimeListBO, CourseTimeListBO.class);
+            } else {
+                return CommonResponseHandler.handleNoAuthentication(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
             return CommonResponseHandler.handleException();
         }
     }

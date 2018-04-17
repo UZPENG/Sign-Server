@@ -18,7 +18,7 @@ public interface CourseMapper {
     @Select("SELECT * FROM course WHERE teacher_id=#{id}")
     List<CourseDO> getCourseByTeacherId(@Param("id") int teacherId);
 
-    @Update("UPDATE course SET course_num=#{course.course_num}, name=#{course.name},semester=#{course.semester}," +
+    @Update("UPDATE course SET course_num=#{course.course_num}, name=#{course.name}, semester=#{course.semester}," +
             "teacher_id=#{course.teacher_id},start_week=#{course.start_week},end_week=#{course.end_week} WHERE id" +
             "=#{course.id}")
     void updateCourse(@Param("course")CourseDO courseDO);
@@ -26,7 +26,10 @@ public interface CourseMapper {
     @Delete("DELETE FROM course WHERE id = #{id}")
     void deleteCourse(@Param("id")int id);
 
-    @Select("SELECT * FROM course WHERE name LIKE '%#{name}%'")
+    @Delete("DELETE FROM course WHERE semester = #{semester} AND teacher_id=#{teacher_id}")
+    void deleteCourseBySemester(@Param("semester")int id, @Param("teacher_id") int teacherId);
+
+    @Select("SELECT * FROM course WHERE name LIKE #{name}")
     List<CourseDO> getCourseByName(@Param("name") String courseName);
 
     @Select("SELECT * FROM course WHERE id=#{id}")

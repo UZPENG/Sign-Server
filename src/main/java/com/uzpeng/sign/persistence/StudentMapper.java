@@ -23,12 +23,12 @@ public interface StudentMapper {
     List<Integer> getStudentIdByNum(@Param("list") List<String> num);
 
     @Select("SELECT student_num FROM student")
-    List<Integer> getStudentNum();
+    List<String> getStudentNum();
 
-    @SelectProvider(type = StudentProvider.class, method = "getStudentList")
+    @SelectProvider(type = StudentProvider.class, method = "getStudentListById")
     List<StudentDO> getStudentListByStudentId(@Param("list") List<Integer> studentId);
 
-    @Select("SELECT * FROM student WHERE student_num like '%#{num}%'")
+    @Select("SELECT * FROM student WHERE student_num like #{num}")
     List<StudentDO> getStudentListByStudentNum(@Param("num") String studentNum);
 
 }

@@ -25,7 +25,7 @@ public class ErrorController {
     public String handleError(HttpServletResponse response){
         response.setStatus(403);
         ErrorBO errorBO = new ErrorBO();
-        errorBO.setMsg("Bad Request!");
+        errorBO.setMsg("Parameter Invalid Request!");
         errorBO.setDoc(environment.getProperty("link.doc"));
 
         return SerializeUtil.toJson(errorBO, ErrorBO.class);

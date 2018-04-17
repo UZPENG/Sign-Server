@@ -1,11 +1,13 @@
 package com.uzpeng.sign.util;
 
 import com.uzpeng.sign.dao.bo.CourseBO;
+import com.uzpeng.sign.dao.bo.CourseTimeBO;
 import com.uzpeng.sign.dao.bo.SemesterBO;
 import com.uzpeng.sign.dao.bo.StudentBO;
 import com.uzpeng.sign.domain.*;
 import com.uzpeng.sign.web.dto.*;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,17 +37,17 @@ public class ObjectTranslateUtil {
         return teacherDO;
     }
 
-    public static SemesterDO semesterDTOToSemesterDO(SemesterDTO semesterDTO){
+    public static SemesterDO semesterDTOToSemesterDO(SemesterDTO semesterDTO, int teacherId){
         SemesterDO semesterDO = new SemesterDO();
 
-        Integer semester = Integer.parseInt(semesterDTO.getSemester());
-        Integer startYear = Integer.parseInt(semesterDTO.getStartYear());
-
-        Integer id = startYear * 10 + semester;
-
-        semesterDO.setId(id);
+        if(semesterDTO.getId() !=null) {
+            semesterDO.setId(semesterDTO.getId());
+        }
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
-        semesterDO.setName(DateUtil.semesterIdToName(id));
+
+        Integer semesterNum = Integer.parseInt(semesterDTO.getStartYear()) * 10 + Integer.parseInt(semesterDTO.getSemester());
+        semesterDO.setName(DateUtil.semesterNumToName(semesterNum));
+        semesterDO.setTeacherId(teacherId);
         semesterDO.setStartTime(LocalDateTime.parse(semesterDTO.getDate().get(0), dateTimeFormatter));
         semesterDO.setEndTime(LocalDateTime.parse(semesterDTO.getDate().get(1), dateTimeFormatter));
 
@@ -55,12 +57,13 @@ public class ObjectTranslateUtil {
     public static CourseDO courseDTOToCourseDO(CourseDTO courseDTO){
         CourseDO courseDO = new CourseDO();
 
-        courseDO.setId(Integer.parseInt(courseDTO.getCourseId()));
+        if(courseDTO.getCourseId() != null) {
+            courseDO.setId(Integer.parseInt(courseDTO.getCourseId()));
+        }
         courseDO.setTeacherId(courseDTO.getTeacherId());
         courseDO.setName(courseDTO.getCourseName());
         courseDO.setCourseNum(courseDTO.getCourseNum());
-        //todo 非法参数处理
-        courseDO.setSemester(DateUtil.semesterNameToId(courseDTO.getSemester()));
+        courseDO.setSemester(Integer.parseInt(courseDTO.getSemester()));
         courseDO.setStartWeek(courseDTO.getStartWeek());
         courseDO.setEndWeek(courseDTO.getEndWeek());
 
@@ -109,6 +112,11 @@ public class ObjectTranslateUtil {
    public static SemesterBO semesterDOToSemesterBO(SemesterDO semesterDO){
        SemesterBO semesterBO = new SemesterBO();
        semesterBO.setSemesterId(semesterDO.getId());
+
+       Integer semesterInt = DateUtil.semesterNameToNum(semesterDO.getName());
+       semesterBO.setNum(semesterInt % 10);
+       semesterBO.setStartYear(semesterInt / 10);
+       semesterBO.setEndYear(semesterInt / 10 + 1);
        semesterBO.setSemesterName(String.valueOf(semesterDO.getName()));
        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
        semesterBO.setStartTime(semesterDO.getStartTime().format(dateTimeFormatter));
@@ -132,6 +140,7 @@ public class ObjectTranslateUtil {
                                              SemesterBO semesterBO){
        CourseBO courseBO = new CourseBO();
        courseBO.setCourseId(courseDO.getId());
+       courseBO.setSemesterId(semesterBO.getSemesterId());
        courseBO.setCourseName(courseDO.getName());
        courseBO.setCourseNum(courseDO.getCourseNum());
        courseBO.setSemester(semesterBO.getSemesterName());
@@ -144,6 +153,7 @@ public class ObjectTranslateUtil {
                courseTimeDOList) {
            CourseBO.CourseTimeDetail timeDetail = new CourseBO.CourseTimeDetail();
 
+           timeDetail.setCourseTimeId(courseTimeDO.getId());
            timeDetail.setStart(courseTimeDO.getCourseSectionStart());
            timeDetail.setEnd(courseTimeDO.getCourseSectionEnd());
            timeDetail.setWeekday(courseTimeDO.getCourseWeekday());
@@ -152,5 +162,30 @@ public class ObjectTranslateUtil {
            courseBO.getTime().add(timeDetail);
        }
        return courseBO;
+   }
+
+   public static String courseTimeDoToString(CourseTimeDO courseTimeDO){
+        int weekday = courseTimeDO.getCourseWeekday();
+        int start = courseTimeDO.getCourseSectionStart();
+        int end = courseTimeDO.getCourseSectionEnd();
+
+        String[] weekdayStr={"一","二","三","四","五","六","日"};
+        String formatStr = "星期{0} 第{1}节-第{2}节";
+
+       MessageFormat messageFormat = new MessageFormat(formatStr);
+       return messageFormat.format(new Object[]{weekdayStr[weekday-1], start, end});
+   }
+
+   public static CourseTimeBO courseTimeDOToCourseTimeBO(CourseTimeDO courseTimeDO){
+        CourseTimeBO courseTimeBO = new CourseTimeBO();
+
+        courseTimeBO.setCourseId(courseTimeDO.getCourseId());
+        courseTimeBO.setCourseSectionStart(courseTimeDO.getCourseSectionStart());
+        courseTimeBO.setCourseSectionEnd(courseTimeDO.getCourseSectionEnd());
+        courseTimeBO.setCourseWeekday(courseTimeDO.getCourseWeekday());
+        courseTimeBO.setLoc(courseTimeDO.getLoc());
+        courseTimeBO.setId(courseTimeDO.getId());
+
+        return courseTimeBO;
    }
 }

@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.uzpeng.sign.dao.bo.ErrorBO;
 import com.uzpeng.sign.support.CommonResponse;
-import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
@@ -30,7 +29,18 @@ public class CommonResponseHandler {
     }
 
     public static String handleResponse(Object obj, Class clazz){
-        return gson.toJson(obj, clazz);
+        return handleResponse("success", obj, clazz);
+    }
+
+    public static String handleResponse(String status, Object obj, Class clazz){
+        StringBuilder builder = new StringBuilder();
+
+        String json = gson.toJson(obj, clazz);
+        builder.append(json.substring(0, 1));
+        builder.append("\"status\":\"").append(status).append("\",");
+        builder.append(json.substring(1));
+
+        return builder.toString();
     }
 
     public static String handleNoAuthentication(HttpServletResponse response){
@@ -45,6 +55,7 @@ public class CommonResponseHandler {
 
     public static String handleException(){
         ErrorBO errorBO = new ErrorBO();
+        errorBO.setStatus("failed");
         errorBO.setMsg("Internal Error!");
         errorBO.setDoc(environment.getProperty("link.doc"));
         return SerializeUtil.toJson(errorBO, ErrorBO.class);

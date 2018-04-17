@@ -1,14 +1,20 @@
 package com.uzpeng.sign.web;
 
+import com.uzpeng.sign.config.StatusConfig;
 import com.uzpeng.sign.dao.bo.SemesterBO;
 import com.uzpeng.sign.dao.bo.SemesterBOList;
+import com.uzpeng.sign.domain.RoleDO;
 import com.uzpeng.sign.service.SemesterService;
+import com.uzpeng.sign.support.SessionAttribute;
 import com.uzpeng.sign.util.CommonResponseHandler;
 import com.uzpeng.sign.util.SerializeUtil;
+import com.uzpeng.sign.util.SessionStoreKey;
+import com.uzpeng.sign.util.UserMap;
 import com.uzpeng.sign.web.dto.SemesterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author serverliu on 2018/4/10.
@@ -29,88 +35,120 @@ public class SemesterController {
     private static final Logger logger = LoggerFactory.getLogger(SemesterController.class);
     @Autowired
     private SemesterService semesterService;
+    @Autowired
+    private Environment env;
+
 
     @RequestMapping(value = "/v1/semester", method = RequestMethod.POST,
-            consumes = "application/json", produces="application/json;charset=utf-8")
+            produces="application/json;charset=utf-8")
     @ResponseBody
-    public String addSemester(HttpServletRequest request, HttpServletResponse response){
+    public String addSemester(HttpServletRequest request, HttpServletResponse response, HttpSession session){
         try {
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+            RoleDO role = UserMap.getId((String)auth.getObj());
+
             BufferedReader bodyReader = request.getReader();
             String str = SerializeUtil.readStringFromReader(bodyReader);
             logger.info("Parameter is "+str);
 
             SemesterDTO semesterDTO = SerializeUtil.fromJson(str, SemesterDTO.class);
-            semesterService.addSemester(semesterDTO);
+            semesterService.addSemester(semesterDTO, role.getRoleId());
+
+            return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                    env.getProperty("status.success"),  env.getProperty("link.doc"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        //todo 插入学期返回结果
-        return "{}";
+        return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                env.getProperty("status.failed"),  env.getProperty("link.doc"));
     }
 
     @RequestMapping(value = "/v1/semester", method = RequestMethod.GET,
             produces="application/json;charset=utf-8")
     @ResponseBody
-    public String getSemester(HttpServletRequest request, HttpServletResponse response){
+    public String getSemester(HttpServletRequest request, HttpServletResponse response, HttpSession session){
         try {
-            SemesterBOList semesterBOList = semesterService.getSemester();
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+            RoleDO role = UserMap.getId((String)auth.getObj());
 
-            return SerializeUtil.toJson(semesterBOList, SemesterBOList.class);
+            SemesterBOList semesterBOList = semesterService.getSemester(role.getRoleId());
+
+            return CommonResponseHandler.handleResponse(semesterBOList, SemesterBOList.class);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
+        return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                env.getProperty("status.failed"),  env.getProperty("link.doc"));
     }
 
     @RequestMapping(value = "/v1/semester/{id}", method = RequestMethod.GET,
             produces="application/json;charset=utf-8")
     @ResponseBody
-    public String getSemesterById(@PathVariable("id")String id, HttpServletRequest request, HttpServletResponse response){
+    public String getSemesterById(@PathVariable("id")String id, HttpServletRequest request, HttpServletResponse response,
+                                  HttpSession session){
         try {
-            SemesterBO semesterBO = semesterService.getSemesterById(Integer.parseInt(id));
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+            RoleDO role = UserMap.getId((String)auth.getObj());
 
-            return SerializeUtil.toJson(semesterBO, SemesterBO.class);
+            SemesterBO semesterBO = semesterService.getSemesterById(Integer.parseInt(id), role.getRoleId());
+
+            return CommonResponseHandler.handleResponse(semesterBO, SemesterBO.class);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
+        return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                env.getProperty("status.failed"),  env.getProperty("link.doc"));
     }
 
     @RequestMapping(value = "/v1/semester/{id}", method = RequestMethod.PUT,
             produces="application/json;charset=utf-8")
     @ResponseBody
-    public String updateSemesterById(@PathVariable("id")String id, HttpServletRequest request, HttpServletResponse response){
+    public String updateSemesterById(@PathVariable("id")String id, HttpServletRequest request,
+                                     HttpServletResponse response, HttpSession session){
         try {
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+            RoleDO role = UserMap.getId((String)auth.getObj());
+
             BufferedReader bodyReader = request.getReader();
             String str = SerializeUtil.readStringFromReader(bodyReader);
             logger.info("Parameter is "+str);
 
             SemesterDTO semesterDTO = SerializeUtil.fromJson(str, SemesterDTO.class);
-            semesterService.updateSemester(semesterDTO);
+            semesterDTO.setId(Integer.parseInt(id));
+            semesterService.updateSemester(semesterDTO, role.getRoleId());
 
+            return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                    env.getProperty("status.success"),  env.getProperty("link.doc"));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
+        return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                env.getProperty("status.failed"),  env.getProperty("link.doc"));
     }
 
     @RequestMapping(value = "/v1/semester/{id}", method = RequestMethod.DELETE,
             produces="application/json;charset=utf-8")
     @ResponseBody
-    public String deleteSemesterById(@PathVariable("id")String id, HttpServletRequest request, HttpServletResponse response){
+    public String deleteSemesterById(@PathVariable("id")String id, HttpServletRequest request,
+                                     HttpServletResponse response, HttpSession session){
         try {
-            semesterService.deleteSemester(Integer.parseInt(id));
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+            RoleDO role = UserMap.getId((String)auth.getObj());
 
-            return "{}";
+            semesterService.deleteSemester(Integer.parseInt(id), role.getRoleId());
+
+            return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                    env.getProperty("status.success"),  env.getProperty("link.doc"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                env.getProperty("status.failed"),  env.getProperty("link.doc"));
     }
 }

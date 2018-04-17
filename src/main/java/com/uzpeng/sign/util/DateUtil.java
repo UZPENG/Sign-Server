@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +27,7 @@ public class DateUtil {
         return  LocalDate.now().isAfter(courseTime);
     }
 
-    public static String semesterIdToName(Integer semesterId){
+    public static String semesterNumToName(Integer semesterId){
         MessageFormat messageFormat = new MessageFormat("{0}-{1} 第{2}学期");
 
         int year = semesterId / 10;
@@ -37,15 +40,15 @@ public class DateUtil {
         return messageFormat.format(new Object[]{startYear, endYear, semesterNum});
     }
 
-    public static Integer semesterNameToId(String name){
+    public static Integer semesterNameToNum(String name){
         String patternStr = "^[1-9]\\d{3}-[1-9]\\d{3}\\s第[一二]学期$";
 
         Pattern pattern = Pattern.compile(patternStr);
-        Matcher matcher = pattern.matcher(patternStr);
+        Matcher matcher = pattern.matcher(name);
         if(matcher.matches()){
-            String[] data = pattern.split("\\s");
+            String[] data = name.split("\\s");
 
-            String yearStr = data[0].substring(0,3);
+            String yearStr = data[0].substring(0,4);
             Character semesterNumChar = data[1].charAt(1);
 
             int year = Integer.parseInt(yearStr);
@@ -53,8 +56,21 @@ public class DateUtil {
 
             return year * 10 + semesterNum;
         } else {
-            return null;
+            return -1;
         }
+    }
+
+    public static Integer getWeekFrom(LocalDateTime time){
+        LocalDateTime now = LocalDateTime.now();
+        GregorianCalendar paramCalendar = new GregorianCalendar(time.getYear(), time.getMonthValue(), time.getDayOfMonth());
+        GregorianCalendar nowCalendar = new GregorianCalendar(now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+        paramCalendar.setFirstDayOfWeek(Calendar.MONDAY);
+        nowCalendar.setFirstDayOfWeek(Calendar.MONDAY);
+
+        Integer paramDay = paramCalendar.getWeeksInWeekYear();
+        Integer CurrentDay = nowCalendar.getWeeksInWeekYear();
+
+        return (CurrentDay - paramDay) + 1;
     }
 
 }

@@ -48,7 +48,7 @@ public class StudentProvider {
         return statementBuilder.toString();
     }
 
-    public String getStudentList(Map map){
+    public String getStudentListById(Map map){
         List list = (List)map.get("list");
 
         String statement =  "SELECT * FROM student WHERE id IN ";

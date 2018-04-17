@@ -24,13 +24,15 @@ public class SemesterDAO {
 
     @Autowired
     private SemesterMapper semesterMapper;
+    @Autowired
+    private CourseDAO courseDAO;
 
     public void addSemester(SemesterDO semesterDO){
         semesterMapper.addSemester(semesterDO);
     }
 
-    public SemesterBOList getSemester(){
-        List<SemesterDO> semesterDOs = semesterMapper.getSemester();
+    public SemesterBOList getSemester(Integer teacherId){
+        List<SemesterDO> semesterDOs = semesterMapper.getSemester(teacherId);
         List<SemesterBO> semesterBOs = new ArrayList<>();
 
         for (SemesterDO semesterDO:
@@ -46,8 +48,10 @@ public class SemesterDAO {
         return semesterBOList;
     }
 
-    public SemesterBO getSemesterById(Integer id){
-        SemesterDO semesterDO = semesterMapper.getSemesterById(id);
+    public SemesterBO getSemesterById(Integer id, Integer teacherId){
+        logger.info("get semester,semesterId:"+id+", teacherId:"+teacherId);
+
+        SemesterDO semesterDO = semesterMapper.getSemesterById(id, teacherId);
 
         return ObjectTranslateUtil.semesterDOToSemesterBO(semesterDO);
     }
@@ -56,7 +60,9 @@ public class SemesterDAO {
         semesterMapper.updateSemester(semesterDO);
     }
 
-    public void deleteSemester(Integer id){
-        semesterMapper.deleteSemester(id);
+    public void deleteSemester(Integer id, Integer teacherId){
+        semesterMapper.deleteSemester(id, teacherId);
+
+        courseDAO.deleteCourseBySemester(id, teacherId);
     }
 }

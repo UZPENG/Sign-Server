@@ -9,17 +9,28 @@ public class CourseBO {
     private Integer courseId;
     private Integer teacherId;
     private String courseName;
+    private Integer semesterId;
     private String courseNum;
     private String semester;
     private Integer startWeek;
     private Integer endWeek;
+    private Integer studentAmount;
     private List<CourseTimeDetail> time;
 
     public static class CourseTimeDetail{
+        private Integer courseTimeId;
         private Integer weekday;
         private Integer start;
         private Integer end;
         private String loc;
+
+        public Integer getCourseTimeId() {
+            return courseTimeId;
+        }
+
+        public void setCourseTimeId(Integer courseTimeId) {
+            this.courseTimeId = courseTimeId;
+        }
 
         public Integer getWeekday() {
             return weekday;
@@ -52,6 +63,14 @@ public class CourseBO {
         public void setLoc(String loc) {
             this.loc = loc;
         }
+    }
+
+    public Integer getSemesterId() {
+        return semesterId;
+    }
+
+    public void setSemesterId(Integer semesterId) {
+        this.semesterId = semesterId;
     }
 
     public Integer getStartWeek() {
@@ -116,5 +135,13 @@ public class CourseBO {
 
     public void setCourseId(Integer courseId) {
         this.courseId = courseId;
+    }
+
+    public Integer getStudentAmount() {
+        return studentAmount;
+    }
+
+    public void setStudentAmount(Integer studentAmount) {
+        this.studentAmount = studentAmount;
     }
 }

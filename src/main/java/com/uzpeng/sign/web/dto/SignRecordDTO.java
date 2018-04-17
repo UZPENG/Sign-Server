@@ -4,16 +4,16 @@ package com.uzpeng.sign.web.dto;
  * @author serverliu on 2018/4/10.
  */
 public class SignRecordDTO {
-    private String id;
+    private Integer id;
     private String longitude;
     private String latitude;
     private String accuracy;
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

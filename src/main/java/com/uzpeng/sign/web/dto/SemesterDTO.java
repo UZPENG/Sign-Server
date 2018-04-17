@@ -10,18 +10,19 @@ import java.util.List;
  */
 public class SemesterDTO {
 
-    @SerializedName("startYear")
-    @Expose
+    private Integer id;
     private String startYear;
-    @SerializedName("endYear")
-    @Expose
     private String endYear;
-    @SerializedName("semester")
-    @Expose
     private String semester;
-    @SerializedName("date")
-    @Expose
     private List<String> date = null;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getStartYear() {
         return startYear;

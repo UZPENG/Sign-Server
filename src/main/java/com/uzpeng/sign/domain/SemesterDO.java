@@ -7,9 +7,18 @@ import java.time.LocalDateTime;
  */
 public class SemesterDO {
     private Integer id;
+    private Integer teacher_id;
     private String name;
     private LocalDateTime start_time;
     private LocalDateTime end_time;
+
+    public Integer getTeacherId() {
+        return teacher_id;
+    }
+
+    public void setTeacherId(Integer teacher_id) {
+        this.teacher_id = teacher_id;
+    }
 
     public String getName() {
         return name;

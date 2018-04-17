@@ -30,6 +30,7 @@ public class CommonExceptionHandler extends ExceptionHandlerExceptionResolver {
             Writer writer = response.getWriter();
 
             ErrorBO errorBO = new ErrorBO();
+            errorBO.setMsg("failed");
             errorBO.setMsg("Internal Error!");
             errorBO.setDoc(env.getProperty("link.doc"));
             writer.write(SerializeUtil.toJson(errorBO, ErrorBO.class));

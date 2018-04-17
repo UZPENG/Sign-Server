@@ -10,7 +10,7 @@ public class CourseDTO {
     private Integer teacherId;
     private String courseName;
     private String courseNum;
-    private String semester;
+    private String semesterId;
     private Integer startWeek;
     private Integer endWeek;
     private List<CourseTimeDetail> time;
@@ -111,10 +111,10 @@ public class CourseDTO {
     }
 
     public String getSemester() {
-        return semester;
+        return semesterId;
     }
 
     public void setSemester(String semester) {
-        this.semester = semester;
+        this.semesterId = semester;
     }
 }

@@ -78,12 +78,12 @@ public class StudentService {
                 }
                 Cell studentNumCell = currentRow.getCell(0);
                 Cell studentNameCell = currentRow.getCell(1);
-                Cell studentNameClass = currentRow.getCell(0);
+                Cell studentClassCell = currentRow.getCell(2);
 
                 if (studentNumCell != null && studentNameCell != null){
                     String studentNum = String.valueOf((int)studentNumCell.getNumericCellValue());
                     String studentName = studentNameCell.getStringCellValue();
-                    String studentClass = studentNameCell.getStringCellValue();
+                    String studentClass = studentClassCell.getStringCellValue();
                     StudentDO tmpStudentDO = new StudentDO();
                     tmpStudentDO.setName(studentName);
                     tmpStudentDO.setNum(studentNum);
@@ -98,6 +98,14 @@ public class StudentService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public StudentBOList searchStudentByNum(String num){
+        return studentDAO.searchStudentByNum(num);
+    }
+
+    public StudentBOList pickStudent(Integer courseId, Integer amount){
+        return studentDAO.pickStudent(courseId, amount);
     }
 
 }

@@ -7,12 +7,22 @@ import java.time.LocalDateTime;
  */
 public class SignRecordDO {
     private Integer id;
+    private Integer course_sign_id;
+    private Integer student_id;
     private Double longitude;
     private Double latitude;
     private Integer state;
     private String accuracy;
     private String device_no;
-    private LocalDateTime time;
+    private LocalDateTime sign_time;
+
+    public Integer getSignId() {
+        return course_sign_id;
+    }
+
+    public void setSignId(Integer sign_id) {
+        this.course_sign_id = sign_id;
+    }
 
     public Integer getId() {
         return id;
@@ -54,19 +64,29 @@ public class SignRecordDO {
         this.accuracy = accuracy;
     }
 
-    public String getDevice_no() {
+    public String getDeviceNo() {
         return device_no;
     }
 
-    public void setDevice_no(String device_no) {
+    public void setDeviceNo(String device_no) {
         this.device_no = device_no;
     }
 
-    public LocalDateTime getTime() {
-        return time;
+    public LocalDateTime getSignTime() {
+        return sign_time;
     }
 
-    public void setTime(LocalDateTime time) {
-        this.time = time;
+    public void setSignTime(LocalDateTime time) {
+        this.sign_time = time;
     }
+
+
+    public Integer getStudentId() {
+        return student_id;
+    }
+
+    public void setStudentId(Integer student_id) {
+        this.student_id = student_id;
+    }
+
 }

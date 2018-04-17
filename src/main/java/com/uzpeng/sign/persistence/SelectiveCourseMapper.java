@@ -23,4 +23,7 @@ public interface SelectiveCourseMapper {
 
     @Delete("DELETE FROM selective_course WHERE student_id=#{student_id} AND course_id=#{course_id}")
     void removeStudent(@Param("course_id") Integer courseId, @Param("student_id") Integer studentId);
+
+    @Select("SELECT COUNT(*) FROM  selective_course WHERE course_id=#{course_id}")
+    Integer getStudentIdCountByCourseId(@Param("course_id") Integer courseId);
 }

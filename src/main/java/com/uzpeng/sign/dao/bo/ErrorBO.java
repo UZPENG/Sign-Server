@@ -4,8 +4,17 @@ package com.uzpeng.sign.dao.bo;
  * @author serverliu on 2018/4/13.
  */
 public class ErrorBO {
+    private String status;
     private String msg;
     private String doc;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getMsg() {
         return msg;

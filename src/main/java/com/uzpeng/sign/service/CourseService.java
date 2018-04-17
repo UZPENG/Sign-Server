@@ -4,6 +4,8 @@ import com.uzpeng.sign.dao.CourseDAO;
 import com.uzpeng.sign.dao.CourseTimeDAO;
 import com.uzpeng.sign.dao.bo.CourseBO;
 import com.uzpeng.sign.dao.bo.CourseListBO;
+import com.uzpeng.sign.dao.bo.CourseTimeBO;
+import com.uzpeng.sign.dao.bo.CourseTimeListBO;
 import com.uzpeng.sign.domain.CourseTimeDO;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.web.dto.CourseDTO;
@@ -50,5 +52,20 @@ public class CourseService {
 
         courseTimeDAO.addCourseTimeList(ObjectTranslateUtil.courseDTOToCourseTimeDO(courseDTO, courseId));
         courseDAO.updateCourse(courseDTO);
+    }
+
+    public CourseTimeListBO getCourTimeById(Integer courseId){
+        List<CourseTimeDO> courseTimeDOs = courseTimeDAO.getCourseTimeByCourseId(courseId);
+
+        List<CourseTimeBO> courseTimeBOs = new ArrayList<>();
+        for (CourseTimeDO courseTimeDO :
+                courseTimeDOs) {
+            courseTimeBOs.add(ObjectTranslateUtil.courseTimeDOToCourseTimeBO(courseTimeDO));
+        }
+
+        CourseTimeListBO courseTimeListBO = new CourseTimeListBO();
+        courseTimeListBO.setList(courseTimeBOs);
+
+        return courseTimeListBO;
     }
 }

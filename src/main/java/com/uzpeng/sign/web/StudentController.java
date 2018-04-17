@@ -1,14 +1,15 @@
 package com.uzpeng.sign.web;
 
 import com.uzpeng.sign.config.StatusConfig;
-import com.uzpeng.sign.dao.bo.StudentBO;
 import com.uzpeng.sign.dao.bo.StudentBOList;
 import com.uzpeng.sign.domain.RoleDO;
 import com.uzpeng.sign.exception.NoAuthenticatedException;
-import com.uzpeng.sign.support.SessionAttribute;
 import com.uzpeng.sign.service.StudentService;
+import com.uzpeng.sign.support.SessionAttribute;
 import com.uzpeng.sign.util.*;
 import com.uzpeng.sign.web.dto.StudentDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -19,24 +20,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * @author serverliu on 2018/4/7.
  */
 @Controller
 public class StudentController {
+    private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
+
     @Autowired
     private Environment env;
 
     @Autowired
     private StudentService studentService;
 
+    @CrossOrigin(allowedHeaders = "withCredentials")
     @RequestMapping(value = "/v1/course/{courseId}/student", method = RequestMethod.POST,consumes = "multipart/form-data",
             produces = "application/json;charset=utf-8")
     @ResponseBody
     public String insertStudentList(@RequestParam("file") MultipartFile file, @PathVariable("courseId") String id,
                                     HttpSession session, HttpServletResponse response){
+        logger.info("start upload file "+file.getOriginalFilename());
+
         SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
         RoleDO role = UserMap.getId((String)auth.getObj());
         if(role != null && role.getRole().equals(Role.TEACHER)) {
@@ -44,18 +49,20 @@ public class StudentController {
                 Integer courseId = Integer.parseInt(id);
                 InputStream studentList = file.getInputStream();
                 studentService.insertStudentsByFile(studentList, file.getOriginalFilename(), courseId);
+                return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                        env.getProperty("status.success"),  env.getProperty("link.doc"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
-                    env.getProperty("msg.register.verified"),  env.getProperty("link.doc"));
+            response.setStatus(500);
+            return CommonResponseHandler.handleException();
         } else {
             return CommonResponseHandler.handleNoAuthentication(response);
         }
     }
 
-    @RequestMapping(value = "/v1/course/{courseId}/student", method = RequestMethod.POST,
-            consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
+    @RequestMapping(value = "/v1/course/{courseId}/student", method = RequestMethod.POST
+            , produces = "application/json;charset=utf-8")
     @ResponseBody
     public String insertStudent(HttpServletRequest request,  HttpSession session, HttpServletResponse response,
                                 @PathVariable("courseId") String id) throws NoAuthenticatedException{
@@ -66,12 +73,16 @@ public class StudentController {
                 String json = SerializeUtil.readStringFromReader(request.getReader());
                 StudentDTO studentDTO = SerializeUtil.fromJson(json, StudentDTO.class);
 
+                logger.info("start add student "+json);
                 studentService.insertStudent(studentDTO, Integer.parseInt(id));
+
+                return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                        env.getProperty("status.success"),  env.getProperty("link.doc"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
-                    env.getProperty("msg.register.verified"),  env.getProperty("link.doc"));
+            return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                    env.getProperty("status.failed"),  env.getProperty("link.doc"));
         } else {
             return CommonResponseHandler.handleNoAuthentication(response);
         }
@@ -83,9 +94,22 @@ public class StudentController {
     public String getStudentByCourseId(@PathVariable("courseId")String courseId, HttpServletRequest request,
                                        HttpServletResponse response){
         try {
-           StudentBOList studentBOS = studentService.getStudentByCourseId(courseId);
+            String num = request.getParameter("num");
+            String amountStr = request.getParameter("amount");
 
-           return SerializeUtil.toJson(studentBOS, StudentBOList.class);
+            if(amountStr != null){
+                int amount = Integer.parseInt(amountStr);
+                StudentBOList studentBOList = studentService.pickStudent(Integer.parseInt(courseId), amount);
+
+                return  CommonResponseHandler.handleResponse(studentBOList, StudentBOList.class);
+            } else if(num != null){
+                StudentBOList studentBOList = studentService.searchStudentByNum(num);
+                return  CommonResponseHandler.handleResponse(studentBOList, StudentBOList.class);
+            } else {
+                StudentBOList studentBOS = studentService.getStudentByCourseId(courseId);
+
+                return CommonResponseHandler.handleResponse(studentBOS, StudentBOList.class);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -101,7 +125,7 @@ public class StudentController {
         try {
             studentService.removeStudent(courseId, studentId);
             return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
-                    env.getProperty("msg.register.verified"), env.getProperty("link.doc"));
+                    env.getProperty("status.success"), env.getProperty("link.doc"));
         } catch (Exception e) {
             e.printStackTrace();
         }
