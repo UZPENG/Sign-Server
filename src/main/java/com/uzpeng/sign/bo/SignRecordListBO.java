@@ -1,4 +1,4 @@
-package com.uzpeng.sign.dao.bo;
+package com.uzpeng.sign.bo;
 
 import java.util.List;
 
@@ -6,7 +6,16 @@ import java.util.List;
  * @author uzpeng on 2018/4/16.
  */
 public class SignRecordListBO {
+    private Integer signId;
     private List<SignRecordBO> list;
+
+    public Integer getSignId() {
+        return signId;
+    }
+
+    public void setSignId(Integer signId) {
+        this.signId = signId;
+    }
 
     public List<SignRecordBO> getList() {
         return list;

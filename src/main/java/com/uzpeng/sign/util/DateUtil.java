@@ -1,5 +1,6 @@
 package com.uzpeng.sign.util;
 
+import com.uzpeng.sign.domain.CourseTimeDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

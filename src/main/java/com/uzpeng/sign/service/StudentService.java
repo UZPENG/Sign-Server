@@ -1,9 +1,9 @@
 package com.uzpeng.sign.service;
 
 import com.uzpeng.sign.dao.StudentDAO;
-import com.uzpeng.sign.dao.bo.StudentBOList;
+import com.uzpeng.sign.bo.StudentBOList;
 import com.uzpeng.sign.domain.StudentDO;
-import com.uzpeng.sign.exception.InvalidFileException;
+import com.uzpeng.sign.exception.IllegalParameterException;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.web.dto.StudentDTO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -33,7 +33,9 @@ public class StudentService {
     @Autowired
     private StudentDAO studentDAO;
 
-    public void insertStudentsByFile(InputStream excelFileStream, String fiLeName, Integer courseId){
+    public void insertStudentsByFile(InputStream excelFileStream, String fiLeName, Integer courseId)
+            throws IllegalParameterException{
+
         List<StudentDO> studentDOList = parseExcelFile(excelFileStream, fiLeName);
 
         if(studentDOList !=null) {
@@ -56,7 +58,7 @@ public class StudentService {
         studentDAO.removeStudent(Integer.parseInt(courseId), Integer.parseInt(studentId));
     }
 
-    private List<StudentDO> parseExcelFile(InputStream excelFileStream, String filename) throws InvalidFileException{
+    private List<StudentDO> parseExcelFile(InputStream excelFileStream, String filename) throws IllegalParameterException{
         logger.info("filename is "+filename);
         Workbook workbook;
         try{
@@ -65,7 +67,7 @@ public class StudentService {
             } else if (filename.endsWith(XLSX_FORMAT)){
                 workbook = new XSSFWorkbook(excelFileStream);
             } else {
-                throw new InvalidFileException();
+                throw new IllegalParameterException();
             }
             Sheet sheet = workbook.getSheetAt(0);
             int rowCount = sheet.getLastRowNum();

@@ -1,6 +1,6 @@
 package com.uzpeng.sign.web;
 
-import com.uzpeng.sign.dao.bo.ErrorBO;
+import com.uzpeng.sign.bo.ErrorBO;
 import com.uzpeng.sign.util.SerializeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;

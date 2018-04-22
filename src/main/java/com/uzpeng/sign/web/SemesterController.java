@@ -1,9 +1,9 @@
 package com.uzpeng.sign.web;
 
 import com.uzpeng.sign.config.StatusConfig;
-import com.uzpeng.sign.dao.bo.SemesterBO;
-import com.uzpeng.sign.dao.bo.SemesterBOList;
-import com.uzpeng.sign.domain.RoleDO;
+import com.uzpeng.sign.bo.SemesterBO;
+import com.uzpeng.sign.bo.SemesterBOList;
+import com.uzpeng.sign.domain.UserDO;
 import com.uzpeng.sign.service.SemesterService;
 import com.uzpeng.sign.support.SessionAttribute;
 import com.uzpeng.sign.util.CommonResponseHandler;
@@ -45,7 +45,7 @@ public class SemesterController {
     public String addSemester(HttpServletRequest request, HttpServletResponse response, HttpSession session){
         try {
             SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
-            RoleDO role = UserMap.getId((String)auth.getObj());
+            UserDO role = UserMap.getUser((String)auth.getObj());
 
             BufferedReader bodyReader = request.getReader();
             String str = SerializeUtil.readStringFromReader(bodyReader);
@@ -70,7 +70,7 @@ public class SemesterController {
     public String getSemester(HttpServletRequest request, HttpServletResponse response, HttpSession session){
         try {
             SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
-            RoleDO role = UserMap.getId((String)auth.getObj());
+            UserDO role = UserMap.getUser((String)auth.getObj());
 
             SemesterBOList semesterBOList = semesterService.getSemester(role.getRoleId());
 
@@ -91,7 +91,7 @@ public class SemesterController {
                                   HttpSession session){
         try {
             SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
-            RoleDO role = UserMap.getId((String)auth.getObj());
+            UserDO role = UserMap.getUser((String)auth.getObj());
 
             SemesterBO semesterBO = semesterService.getSemesterById(Integer.parseInt(id), role.getRoleId());
 
@@ -112,7 +112,7 @@ public class SemesterController {
                                      HttpServletResponse response, HttpSession session){
         try {
             SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
-            RoleDO role = UserMap.getId((String)auth.getObj());
+            UserDO role = UserMap.getUser((String)auth.getObj());
 
             BufferedReader bodyReader = request.getReader();
             String str = SerializeUtil.readStringFromReader(bodyReader);
@@ -139,9 +139,9 @@ public class SemesterController {
                                      HttpServletResponse response, HttpSession session){
         try {
             SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
-            RoleDO role = UserMap.getId((String)auth.getObj());
+            UserDO role = UserMap.getUser((String)auth.getObj());
 
-            semesterService.deleteSemester(Integer.parseInt(id), role.getRoleId());
+            semesterService.deleteSemester(Integer.parseInt(id));
 
             return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
                     env.getProperty("status.success"),  env.getProperty("link.doc"));

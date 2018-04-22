@@ -13,6 +13,7 @@ public class UserDO {
     private LocalDateTime register_time;
     private int role_id;
     private String role;
+    private String open_id;
 
     public int getId() {
         return id;
@@ -68,5 +69,13 @@ public class UserDO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getOpenId() {
+        return open_id;
+    }
+
+    public void setOpenId(String open_id) {
+        this.open_id = open_id;
     }
 }

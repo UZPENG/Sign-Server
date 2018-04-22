@@ -13,46 +13,7 @@ public class CourseDTO {
     private String semesterId;
     private Integer startWeek;
     private Integer endWeek;
-    private List<CourseTimeDetail> time;
-
-    public static class CourseTimeDetail{
-        private Integer weekday;
-        private Integer start;
-        private Integer end;
-        private String loc;
-
-        public Integer getWeekday() {
-            return weekday;
-        }
-
-        public void setWeekday(Integer weekday) {
-            this.weekday = weekday;
-        }
-
-        public Integer getStart() {
-            return start;
-        }
-
-        public void setStart(Integer start) {
-            this.start = start;
-        }
-
-        public Integer getEnd() {
-            return end;
-        }
-
-        public void setEnd(Integer end) {
-            this.end = end;
-        }
-
-        public String getLoc() {
-            return loc;
-        }
-
-        public void setLoc(String loc) {
-            this.loc = loc;
-        }
-    }
+    private List<CourseTimeDetailDTO> time;
 
     public String getCourseId() {
         return courseId;
@@ -86,11 +47,11 @@ public class CourseDTO {
         this.teacherId = teacherId;
     }
 
-    public List<CourseTimeDetail> getTime() {
+    public List<CourseTimeDetailDTO> getTime() {
         return time;
     }
 
-    public void setTime(List<CourseTimeDetail> time) {
+    public void setTime(List<CourseTimeDetailDTO> time) {
         this.time = time;
     }
 

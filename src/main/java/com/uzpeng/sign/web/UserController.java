@@ -139,10 +139,10 @@ public class UserController {
                 cookie.setHttpOnly(true);
                 response.addCookie(cookie);
 
-                RoleDO roleDO = userService.getRole(id);
-                UserMap.putId(cookieValue, roleDO);
+                UserDO userDO = userService.getUserInfo(String.valueOf(id));
+                UserMap.putUser(cookieValue, userDO);
 
-                logger.info("Login successfully! user is is "+roleDO.getRoleId());
+                logger.info("Login successfully! user is is "+userDO.getRoleId());
 
                 return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
                         env.getProperty("msg.login.success"),  env.getProperty("link.login"));
@@ -187,12 +187,16 @@ public class UserController {
             String json = SerializeUtil.readStringFromReader(request.getReader());
             PasswordDTO passwordDTO = SerializeUtil.fromJson(json, PasswordDTO.class);
 
+            SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
+
+            UserDO userDO = UserMap.getUser((String) auth.getObj());
+            passwordDTO.setUserName(userDO.getName());
+
             Integer id = userService.loginCheck(ObjectTranslateUtil.passwordDTOToLoginDTO(passwordDTO));
-            if(id !=null){
+            if(id != null){
                 userService.updatePassword(id, passwordDTO.getNewPassword());
-            } else {
-                return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
-                        env.getProperty("status.failed"),  env.getProperty("link.host"));
+                return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                        env.getProperty("status.success"),  env.getProperty("link.host"));
             }
         } catch (IOException e){
             e.printStackTrace();

@@ -53,6 +53,6 @@ public class UserDAO {
     }
 
     public void updatePassword(Integer id, String newPassword){
-        userMapper.updatePassword(id, newPassword);
+        userMapper.updatePassword(id, CryptoUtil.encodePassword(newPassword));
     }
 }

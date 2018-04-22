@@ -1,6 +1,6 @@
 package com.uzpeng.sign.util;
 
-import com.uzpeng.sign.domain.RoleDO;
+import com.uzpeng.sign.domain.UserDO;
 
 import java.util.HashMap;
 
@@ -8,13 +8,13 @@ import java.util.HashMap;
  * @author serverliu on 2018/4/11.
  */
 public class UserMap {
-    private static final HashMap<String, RoleDO> idMap = new HashMap<>();
+    private static final HashMap<String, UserDO> idMap = new HashMap<>();
 
-    public static void putId(String auth, RoleDO role){
+    public static void putUser(String auth, UserDO role){
         idMap.put(auth, role);
     }
 
-    public static RoleDO getId(String auth){
+    public static UserDO getUser(String auth){
         return idMap.get(auth);
     }
 

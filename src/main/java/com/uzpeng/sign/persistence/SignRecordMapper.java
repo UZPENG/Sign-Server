@@ -1,10 +1,8 @@
 package com.uzpeng.sign.persistence;
 
 import com.uzpeng.sign.domain.SignRecordDO;
-import org.apache.ibatis.annotations.InsertProvider;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import com.uzpeng.sign.web.dto.SignRecordDTO;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -16,15 +14,18 @@ public interface SignRecordMapper {
     @InsertProvider(type = SignRecordProvider.class, method = "insertAll")
     void insertSignRecordList(@Param("list")List<SignRecordDO> signRecordDOS);
 
-    @Update("Update course_sign_record SET state=#{state} WHERE id=#{id}")
-    void updateSignRecord(@Param("id")Integer id, @Param("state")Integer state);
+    @Update("Update course_sign_record SET state=#{record.state}, sign_time=#{record.sign_time} WHERE id=#{record.id}")
+    void updateSignRecord(@Param("record")SignRecordDO signRecordDO);
 
     @Update("UPDATE course_sign_record SET longitude=#{sign.longitude}, latitude=#{sign.latitude}," +
             "state=#{sign.state} WHERE id=#{sign.id}")
-    void sign(@Param("sign") SignRecordDO signRecordDO);
+    void sign(@Param("sign") SignRecordDTO signRecordDTO);
 
     @Select("SELECT * FROM course_sign_record WHERE course_sign_id=#{id}")
     List<SignRecordDO> getSignRecord(@Param("id") Integer signId);
+
+    @Select("SELECT * FROM course_sign_record WHERE student_id=#{id}")
+    List<SignRecordDO> getSignRecordByStudentId(@Param("id") Integer studentId);
 
     @InsertProvider(type = SignRecordProvider.class, method = "getBySignIds")
     List<SignRecordDO> getSignRecordBySignId(@Param("list") List<Integer> signIds);
@@ -35,4 +36,6 @@ public interface SignRecordMapper {
     @Select("SELECT COUNT(*) FROM course_sign_record WHERE course_sign_id=#{signId} AND state=#{state}")
     Integer getSignCountBySignId(@Param("signId") Integer signId, @Param("state")Integer state);
 
+    @DeleteProvider(type = SignRecordProvider.class, method = "deleteBySignIds")
+    void deleteBySignIdList(@Param("list") List<Integer> signIds);
 }

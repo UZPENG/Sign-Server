@@ -48,4 +48,24 @@ public class SignRecordProvider {
         statementBuilder.append(")");
         return statementBuilder.toString();
     }
+
+    public String deleteBySignIds(Map map){
+        //todo 类型检测
+        List list = (List)map.get("list");
+
+        String statement =  "DELETE FROM course_sign_record WHERE course_sign_id IN ";
+        MessageFormat messageFormat = new MessageFormat("#'{'list[{0}]}");
+
+        StringBuilder statementBuilder = new StringBuilder();
+        statementBuilder.append(statement);
+        statementBuilder.append("(");
+        for (int i = 0; i < list.size(); i++) {
+            statementBuilder.append(messageFormat.format(new Object[]{i}));
+            if(i < list.size() -1){
+                statementBuilder.append(",");
+            }
+        }
+        statementBuilder.append(")");
+        return statementBuilder.toString();
+    }
 }

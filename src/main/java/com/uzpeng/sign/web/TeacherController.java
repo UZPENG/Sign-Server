@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -32,7 +33,7 @@ public class TeacherController {
     @RequestMapping(value = "/v1/teacher", method = RequestMethod.POST,
             produces = "application/json;charset=utf-8")
     @ResponseBody
-    public String addTeacher( HttpServletRequest request){
+    public String addTeacher(HttpServletRequest request, HttpServletResponse response){
 
         try {
             Reader reader = request.getReader();
@@ -46,7 +47,7 @@ public class TeacherController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return CommonResponseHandler.handleException();
+        return CommonResponseHandler.handleException(response);
     }
 
     @RequestMapping(value = "/v1/teacher", method = RequestMethod.PUT,

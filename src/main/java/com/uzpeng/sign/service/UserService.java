@@ -53,7 +53,7 @@ public class UserService {
         mailSender.setPassword(emailConfig.getPassword());
 
         //todo
-//        ThreadPool.run(()-> mailSender.send(simpleMailMessage));
+        ThreadPool.run(()-> mailSender.send(simpleMailMessage));
     }
 
     public RoleDO getRole(int id){

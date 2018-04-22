@@ -1,4 +1,4 @@
-package com.uzpeng.sign.dao.bo;
+package com.uzpeng.sign.bo;
 
 import java.util.List;
 

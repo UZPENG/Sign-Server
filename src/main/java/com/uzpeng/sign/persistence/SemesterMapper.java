@@ -24,5 +24,5 @@ public interface SemesterMapper {
     void updateSemester(@Param("semester") SemesterDO semesterDO);
 
     @Delete("DELETE FROM semester WHERE id=#{id}")
-    void deleteSemester(@Param("id") Integer semesterId, @Param("teacher_id") Integer teacherId);
+    void deleteSemester(@Param("id") Integer semesterId);
 }

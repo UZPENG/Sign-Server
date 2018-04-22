@@ -1,9 +1,6 @@
 package com.uzpeng.sign.util;
 
-import com.uzpeng.sign.dao.bo.CourseBO;
-import com.uzpeng.sign.dao.bo.CourseTimeBO;
-import com.uzpeng.sign.dao.bo.SemesterBO;
-import com.uzpeng.sign.dao.bo.StudentBO;
+import com.uzpeng.sign.bo.*;
 import com.uzpeng.sign.domain.*;
 import com.uzpeng.sign.web.dto.*;
 
@@ -73,8 +70,8 @@ public class ObjectTranslateUtil {
     public static List<CourseTimeDO> courseDTOToCourseTimeDO(CourseDTO courseDTO, int courseId){
         List<CourseTimeDO> courseTimeList = new ArrayList<>();
 
-        List<CourseDTO.CourseTimeDetail> courseTimeDetails =courseDTO.getTime();
-        for (CourseDTO.CourseTimeDetail time:
+        List<CourseTimeDetailDTO> courseTimeDetails =courseDTO.getTime();
+        for (CourseTimeDetailDTO time:
              courseTimeDetails) {
 
             CourseTimeDO courseTimeDO = new CourseTimeDO();
@@ -151,7 +148,7 @@ public class ObjectTranslateUtil {
 
        for (CourseTimeDO courseTimeDO :
                courseTimeDOList) {
-           CourseBO.CourseTimeDetail timeDetail = new CourseBO.CourseTimeDetail();
+           CourseTimeDetailBO timeDetail = new CourseTimeDetailBO();
 
            timeDetail.setCourseTimeId(courseTimeDO.getId());
            timeDetail.setStart(courseTimeDO.getCourseSectionStart());

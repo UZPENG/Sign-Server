@@ -2,10 +2,11 @@ package com.uzpeng.sign.service;
 
 import com.uzpeng.sign.dao.CourseDAO;
 import com.uzpeng.sign.dao.CourseTimeDAO;
-import com.uzpeng.sign.dao.bo.CourseBO;
-import com.uzpeng.sign.dao.bo.CourseListBO;
-import com.uzpeng.sign.dao.bo.CourseTimeBO;
-import com.uzpeng.sign.dao.bo.CourseTimeListBO;
+import com.uzpeng.sign.bo.CourseBO;
+import com.uzpeng.sign.bo.CourseListBO;
+import com.uzpeng.sign.bo.CourseTimeBO;
+import com.uzpeng.sign.bo.CourseTimeListBO;
+import com.uzpeng.sign.domain.CourseDO;
 import com.uzpeng.sign.domain.CourseTimeDO;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.web.dto.CourseDTO;
@@ -55,6 +56,7 @@ public class CourseService {
     }
 
     public CourseTimeListBO getCourTimeById(Integer courseId){
+        CourseBO courseBO = courseDAO.getCourseById(courseId);
         List<CourseTimeDO> courseTimeDOs = courseTimeDAO.getCourseTimeByCourseId(courseId);
 
         List<CourseTimeBO> courseTimeBOs = new ArrayList<>();
@@ -65,6 +67,8 @@ public class CourseService {
 
         CourseTimeListBO courseTimeListBO = new CourseTimeListBO();
         courseTimeListBO.setList(courseTimeBOs);
+        courseTimeListBO.setStartWeek(courseBO.getStartWeek());
+        courseTimeListBO.setEndWeek(courseBO.getEndWeek());
 
         return courseTimeListBO;
     }

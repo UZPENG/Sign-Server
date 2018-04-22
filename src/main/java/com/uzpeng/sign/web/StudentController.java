@@ -1,8 +1,9 @@
 package com.uzpeng.sign.web;
 
 import com.uzpeng.sign.config.StatusConfig;
-import com.uzpeng.sign.dao.bo.StudentBOList;
+import com.uzpeng.sign.bo.StudentBOList;
 import com.uzpeng.sign.domain.RoleDO;
+import com.uzpeng.sign.domain.UserDO;
 import com.uzpeng.sign.exception.NoAuthenticatedException;
 import com.uzpeng.sign.service.StudentService;
 import com.uzpeng.sign.support.SessionAttribute;
@@ -43,7 +44,7 @@ public class StudentController {
         logger.info("start upload file "+file.getOriginalFilename());
 
         SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
-        RoleDO role = UserMap.getId((String)auth.getObj());
+        UserDO role = UserMap.getUser((String)auth.getObj());
         if(role != null && role.getRole().equals(Role.TEACHER)) {
             try {
                 Integer courseId = Integer.parseInt(id);
@@ -54,8 +55,8 @@ public class StudentController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            response.setStatus(500);
-            return CommonResponseHandler.handleException();
+
+            return CommonResponseHandler.handleException(response);
         } else {
             return CommonResponseHandler.handleNoAuthentication(response);
         }
@@ -67,7 +68,7 @@ public class StudentController {
     public String insertStudent(HttpServletRequest request,  HttpSession session, HttpServletResponse response,
                                 @PathVariable("courseId") String id) throws NoAuthenticatedException{
         SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
-        RoleDO role = UserMap.getId((String)auth.getObj());
+        UserDO role = UserMap.getUser((String)auth.getObj());
         if(role != null && role.getRole().equals(Role.TEACHER)) {
             try {
                 String json = SerializeUtil.readStringFromReader(request.getReader());
@@ -114,7 +115,7 @@ public class StudentController {
             e.printStackTrace();
         }
 
-        return CommonResponseHandler.handleException();
+        return CommonResponseHandler.handleException(response);
     }
 
     @RequestMapping(value = "/v1/course/{courseId}/student/{studentId}", method = RequestMethod.DELETE,

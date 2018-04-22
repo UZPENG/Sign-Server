@@ -5,6 +5,15 @@ package com.uzpeng.sign.web.dto;
  */
 public class CreateSignRecordDTO {
     private Integer courseTimeId;
+    private Integer week;
+
+    public Integer getWeek() {
+        return week;
+    }
+
+    public void setWeek(Integer week) {
+        this.week = week;
+    }
 
     public Integer getCourseTimeId() {
         return courseTimeId;

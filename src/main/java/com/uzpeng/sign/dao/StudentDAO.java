@@ -1,7 +1,7 @@
 package com.uzpeng.sign.dao;
 
-import com.uzpeng.sign.dao.bo.StudentBO;
-import com.uzpeng.sign.dao.bo.StudentBOList;
+import com.uzpeng.sign.bo.StudentBO;
+import com.uzpeng.sign.bo.StudentBOList;
 import com.uzpeng.sign.domain.SelectiveCourseDO;
 import com.uzpeng.sign.domain.StudentDO;
 import com.uzpeng.sign.domain.UserDO;

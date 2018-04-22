@@ -1,7 +1,7 @@
 package com.uzpeng.sign.dao;
 
-import com.uzpeng.sign.dao.bo.SemesterBO;
-import com.uzpeng.sign.dao.bo.SemesterBOList;
+import com.uzpeng.sign.bo.SemesterBO;
+import com.uzpeng.sign.bo.SemesterBOList;
 import com.uzpeng.sign.domain.SemesterDO;
 import com.uzpeng.sign.persistence.SemesterMapper;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
@@ -60,9 +60,9 @@ public class SemesterDAO {
         semesterMapper.updateSemester(semesterDO);
     }
 
-    public void deleteSemester(Integer id, Integer teacherId){
-        semesterMapper.deleteSemester(id, teacherId);
+    public void deleteSemester(Integer id){
+        courseDAO.deleteCourseBySemester(id);
 
-        courseDAO.deleteCourseBySemester(id, teacherId);
+        semesterMapper.deleteSemester(id);
     }
 }

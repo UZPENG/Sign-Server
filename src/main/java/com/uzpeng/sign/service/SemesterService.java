@@ -1,8 +1,8 @@
 package com.uzpeng.sign.service;
 
 import com.uzpeng.sign.dao.SemesterDAO;
-import com.uzpeng.sign.dao.bo.SemesterBO;
-import com.uzpeng.sign.dao.bo.SemesterBOList;
+import com.uzpeng.sign.bo.SemesterBO;
+import com.uzpeng.sign.bo.SemesterBOList;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.web.dto.SemesterDTO;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class SemesterService {
         semesterDAO.updateSemester(ObjectTranslateUtil.semesterDTOToSemesterDO(semesterDTO, teacherId));
     }
 
-    public void deleteSemester(Integer semesterId, Integer teacherId){
-        semesterDAO.deleteSemester(semesterId, teacherId);
+    public void deleteSemester(Integer semesterId){
+        semesterDAO.deleteSemester(semesterId);
     }
 }

@@ -31,6 +31,10 @@ public class TeacherDAO {
         userDO.setId(teacherDO.getId());
     }
 
+    public TeacherDO getTeacherId(Integer teacherId){
+        return teacherMapper.getTeacher(teacherId);
+    }
+
     public void updateTeacher(TeacherDO teacherDO){
         teacherMapper.updateTeacher(teacherDO);
     }

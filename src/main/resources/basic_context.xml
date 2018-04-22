@@ -13,6 +13,10 @@
     <context:component-scan base-package="com.uzpeng.sign.dao"/>
     <context:component-scan base-package="com.uzpeng.sign.service"/>
     <context:component-scan base-package="com.uzpeng.sign.config"/>
+    <context:component-scan base-package="com.uzpeng.sign.exception"/>
+
+    <bean id="crossSiteInterceptor" class="com.uzpeng.sign.interceptor.CrossSiteInterceptor"/>
+    <bean id="websocketHandler" class="com.uzpeng.sign.net.SignWebSocketHandler"/>
 
     <context:annotation-config />
 
@@ -26,6 +30,8 @@
         </property>
     </bean>
 
+    <bean id="springContext" class="com.uzpeng.sign.util.SpringContextUtil"/>
+
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="properties" ref="configProperties"/>
     </bean>
@@ -35,7 +41,16 @@
           p:driverClassName="com.mysql.jdbc.Driver"
           p:url="${database.jdbc.url}"
           p:username="${database.username}"
-          p:password="${database.password}"/>
+          p:password="${database.password}">
+
+        <property name="testWhileIdle"><value>true</value></property>
+        <property name="testOnBorrow"><value>false</value></property>
+        <property name="testOnReturn"><value>false</value></property>
+        <property name="validationQuery"><value>select * from validation</value></property>
+        <property name="validationQueryTimeout"><value>1</value></property>
+        <property name="timeBetweenEvictionRunsMillis"><value>30000</value></property>
+        <property name="numTestsPerEvictionRun"><value>20</value></property>
+    </bean>
 
     <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
           p:dataSource-ref="dataSource"/>
@@ -48,8 +63,6 @@
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>
-
-    <bean id="handleException" class="com.uzpeng.sign.exception.CommonExceptionHandler"/>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />

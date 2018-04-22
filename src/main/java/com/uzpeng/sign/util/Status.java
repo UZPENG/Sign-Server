@@ -6,6 +6,6 @@ package com.uzpeng.sign.util;
 public interface Status {
     Integer CREATED = 0;
     Integer SIGNED = 1;
-    Integer SUCCESS = 2;
-    Integer FAILED = 3;
+    Integer FAILED = 2;
+    Integer SUCCESS = 3;
 }

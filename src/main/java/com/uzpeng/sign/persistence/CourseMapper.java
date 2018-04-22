@@ -26,8 +26,8 @@ public interface CourseMapper {
     @Delete("DELETE FROM course WHERE id = #{id}")
     void deleteCourse(@Param("id")int id);
 
-    @Delete("DELETE FROM course WHERE semester = #{semester} AND teacher_id=#{teacher_id}")
-    void deleteCourseBySemester(@Param("semester")int id, @Param("teacher_id") int teacherId);
+    @Select("SELECT * FROM course WHERE semester =#{semester}")
+    List<CourseDO> getCourseBySemesterId(@Param("semester")int id);
 
     @Select("SELECT * FROM course WHERE name LIKE #{name}")
     List<CourseDO> getCourseByName(@Param("name") String courseName);

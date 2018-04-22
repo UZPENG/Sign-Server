@@ -6,20 +6,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /**
- * @author serverliu on 2018/4/13.
+ * @author uzpeng on 2018/4/18.
  */
 @Component
-public class NoAuthenticatedException extends BaseException {
+public class DuplicateDataException extends BaseException {
     @Autowired
-    private Environment env;
+    private Environment environment;
 
     @Override
     public int getStatus() {
-        return HttpStatus.FORBIDDEN.value();
+        return HttpStatus.CONFLICT.value();
     }
 
     @Override
     public String getMsg() {
-        return env.getProperty("exception.noAuthentication");
+        return environment.getProperty("exception.duplicateData");
+    }
+
+    @Override
+    public String getMessage() {
+        return getMsg();
     }
 }

@@ -1,6 +1,8 @@
 package com.uzpeng.sign.dao;
 
-import com.uzpeng.sign.dao.bo.*;
+import com.uzpeng.sign.bo.CourseBO;
+import com.uzpeng.sign.bo.CourseListBO;
+import com.uzpeng.sign.bo.SemesterBO;
 import com.uzpeng.sign.domain.CourseDO;
 import com.uzpeng.sign.domain.CourseTimeDO;
 import com.uzpeng.sign.persistence.CourseMapper;
@@ -112,6 +114,7 @@ public class CourseDAO {
 
     public void deleteCourseById(Integer id){
         selectiveCourseDAO.removeCourse(id);
+        signDAO.deleteSignRecord(id);
         courseTimeDAO.deleteCourseTime(id);
         courseMapper.deleteCourse(id);
     }
@@ -121,7 +124,11 @@ public class CourseDAO {
         courseMapper.updateCourse(ObjectTranslateUtil.courseDTOToCourseDO(courseDTO));
     }
 
-    public void deleteCourseBySemester(Integer semesterId, Integer teacherId){
-        courseMapper.deleteCourseBySemester(semesterId, teacherId);
+    public void deleteCourseBySemester(Integer semesterId){
+        List<CourseDO> courseDOs = courseMapper.getCourseBySemesterId(semesterId);
+        for (CourseDO courseDO :
+                courseDOs) {
+         deleteCourseById(courseDO.getId());
+        }
     }
 }

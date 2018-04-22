@@ -11,6 +11,7 @@ public class SignDO {
     private Integer course_time_id;
     private Integer course_id;
     private Integer week;
+    private Integer state;
 
     public Integer getId() {
         return id;
@@ -50,5 +51,13 @@ public class SignDO {
 
     public void setWeek(Integer week) {
         this.week = week;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 }

@@ -2,10 +2,11 @@ package com.uzpeng.sign.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.uzpeng.sign.dao.bo.ErrorBO;
+import com.uzpeng.sign.bo.ErrorBO;
 import com.uzpeng.sign.support.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,8 +14,6 @@ import javax.servlet.http.HttpServletResponse;
  * @author serverliu on 2018/4/3.
  */
 public class CommonResponseHandler {
-    @Autowired
-    private static Environment environment;
 
     private static final  Gson gson = new GsonBuilder().create();
 
@@ -48,16 +47,17 @@ public class CommonResponseHandler {
         ErrorBO errorBO = new ErrorBO();
 
         errorBO.setMsg("Authentication Invalid");
-        errorBO.setMsg(environment.getProperty("link.doc"));
+//        errorBO.setMsg(environment.getProperty("link.doc"));
 
         return gson.toJson(errorBO, ErrorBO.class);
     }
 
-    public static String handleException(){
+    public static String handleException(HttpServletResponse response){
+        response.setStatus(500);
         ErrorBO errorBO = new ErrorBO();
         errorBO.setStatus("failed");
         errorBO.setMsg("Internal Error!");
-        errorBO.setDoc(environment.getProperty("link.doc"));
+//        errorBO.setDoc(environment.getProperty("link.doc"));
         return SerializeUtil.toJson(errorBO, ErrorBO.class);
     }
 }

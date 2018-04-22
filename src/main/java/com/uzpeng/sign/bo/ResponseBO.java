@@ -1,4 +1,4 @@
-package com.uzpeng.sign.dao.bo;
+package com.uzpeng.sign.bo;
 
 /**
  * @author uzpeng on 2018/4/16.

@@ -25,13 +25,17 @@ ext {
 //    httpPort = 8088
 //    ajpPort = 8888
 //    stopPort = 8087
-//    contextPath = 'dev'
+//    contextPath = 'sign'
 //}
 
 /**
  * 稳定版本
  */
 tomcat{
+    httpProtocol = 'org.apache.coyote.http11.Http11Nio2Protocol'
+    ajpProtocol  = 'org.apache.coyote.ajp.AjpNio2Protocol'
+
+
     httpPort = 8080
 }
 
@@ -43,7 +47,7 @@ buildscript{
     }
 
     dependencies {
-        classpath "com.bmuschko:gradle-tomcat-plugin:2.2.3"
+        classpath "com.bmuschko:gradle-tomcat-plugin:2.5"
     }
 }
 
@@ -64,14 +68,15 @@ dependencies {
      * spring核心
      */
     compile "org.springframework:spring-context:$springVersion"
-    compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.4'
 
     /**
      * web
      */
     providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
     providedCompile group: 'javax.servlet', name: 'jstl', version: '1.2'
+    providedCompile "javax.websocket:javax.websocket-api:1.1"
     compile "org.springframework:spring-webmvc:$springVersion"
+    compile "org.springframework:spring-websocket:$springVersion"
     compile "javax.el:javax.el-api:3.0.0"
 
 
@@ -79,6 +84,7 @@ dependencies {
      * 数据库
      */
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.45'
+    compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.4'
     compile "org.springframework:spring-jdbc:$springVersion"
 
     /**
@@ -145,8 +151,9 @@ dependencies {
     /**
      * 嵌入式tomcat
      */
-    def tomcatVersion = '7.0.82'
+    def tomcatVersion = '9.0.1'
     tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:9.0.0.M6",
+            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}"
 }

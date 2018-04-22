@@ -1,4 +1,4 @@
-package com.uzpeng.sign.dao.bo;
+package com.uzpeng.sign.bo;
 
 import java.util.List;
 
@@ -15,55 +15,7 @@ public class CourseBO {
     private Integer startWeek;
     private Integer endWeek;
     private Integer studentAmount;
-    private List<CourseTimeDetail> time;
-
-    public static class CourseTimeDetail{
-        private Integer courseTimeId;
-        private Integer weekday;
-        private Integer start;
-        private Integer end;
-        private String loc;
-
-        public Integer getCourseTimeId() {
-            return courseTimeId;
-        }
-
-        public void setCourseTimeId(Integer courseTimeId) {
-            this.courseTimeId = courseTimeId;
-        }
-
-        public Integer getWeekday() {
-            return weekday;
-        }
-
-        public void setWeekday(Integer weekday) {
-            this.weekday = weekday;
-        }
-
-        public Integer getStart() {
-            return start;
-        }
-
-        public void setStart(Integer start) {
-            this.start = start;
-        }
-
-        public Integer getEnd() {
-            return end;
-        }
-
-        public void setEnd(Integer end) {
-            this.end = end;
-        }
-
-        public String getLoc() {
-            return loc;
-        }
-
-        public void setLoc(String loc) {
-            this.loc = loc;
-        }
-    }
+    private List<CourseTimeDetailBO> time;
 
     public Integer getSemesterId() {
         return semesterId;
@@ -97,11 +49,11 @@ public class CourseBO {
         this.teacherId = teacherId;
     }
 
-    public List<CourseTimeDetail> getTime() {
+    public List<CourseTimeDetailBO> getTime() {
         return time;
     }
 
-    public void setTime(List<CourseTimeDetail> time) {
+    public void setTime(List<CourseTimeDetailBO> time) {
         this.time = time;
     }
 
