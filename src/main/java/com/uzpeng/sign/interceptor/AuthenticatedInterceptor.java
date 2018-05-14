@@ -23,7 +23,6 @@ public class AuthenticatedInterceptor implements HandlerInterceptor {
         logger.info("start checking authentication!");
 
         SessionAttribute authInfo = (SessionAttribute)request.getSession().getAttribute(SessionStoreKey.KEY_AUTH);
-
         if(authInfo == null){
             logger.info("no authentication information!");
             response.setStatus(404);

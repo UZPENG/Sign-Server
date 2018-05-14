@@ -7,9 +7,14 @@ public interface StatusConfig {
     String SUCCESS = "success";
     String FAILED = "failed";
 
-    Integer CREATE = -1;
-    Integer START = 1;
-    Integer FINISH = 0;
+    Integer SIGN_CREATE_FLAG = -1;
+    Integer SIGN_START_FLAG = 1;
+    Integer SIGN_FINISH_FLAG = 0;
+
+    Integer RECORD_CREATED = 0;
+    Integer RECORD_SIGNED = 1;
+    Integer RECORD_FAILED = 2;
+    Integer RECORD_SUCCESS = 3;
 
     Integer HISTORY = 0;
     Integer TODAY = 1;

@@ -22,6 +22,9 @@ public interface StudentMapper {
     @SelectProvider(type = StudentProvider.class, method = "getIdByNum")
     List<Integer> getStudentIdByNum(@Param("list") List<String> num);
 
+    @SelectProvider(type = StudentProvider.class, method = "getStudentsByNum")
+    List<StudentDO> getStudentsByNum(@Param("list") List<String> num);
+
     @Select("SELECT student_num FROM student")
     List<String> getStudentNum();
 

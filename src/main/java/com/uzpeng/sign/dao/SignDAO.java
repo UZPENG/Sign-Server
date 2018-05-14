@@ -9,22 +9,26 @@ import com.uzpeng.sign.persistence.SignRecordMapper;
 import com.uzpeng.sign.util.DateUtil;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.util.SpringContextUtil;
-import com.uzpeng.sign.util.Status;
 import com.uzpeng.sign.web.dto.SignRecordDTO;
 import com.uzpeng.sign.web.dto.UpdateSignRecordDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author uzpeng on 2018/4/16.
  */
 @Repository
 public class SignDAO {
+    private final Logger logger = LoggerFactory.getLogger(SignDAO.class);
     @Autowired
     private SignRecordMapper signRecordMapper;
     @Autowired
@@ -64,24 +68,29 @@ public class SignDAO {
         signDO.setCreateTime(LocalDateTime.now());
         signDO.setWeek(week);
         signDO.setCourseTimeId(courseTimeId);
-        signDO.setState(StatusConfig.CREATE);
+        signDO.setState(StatusConfig.SIGN_CREATE_FLAG);
         List<SignDO> signDOs = new ArrayList<>();
         signDOs.add(signDO);
         signMapper.insertSignList(signDOs);
 
         List<StudentBO> studentBOS = studentList.getStudentList();
+
+        addStudentToSignRecord(signDO.getId(), studentBOS);
+    }
+
+    public void addStudentToSignRecord(Integer signId, List<StudentBO> studentBOS){
         List<SignRecordDO> signRecordDOS = new ArrayList<>();
+
         for (StudentBO studentBO :
                 studentBOS) {
             SignRecordDO signRecordDO = new SignRecordDO();
 
             signRecordDO.setStudentId(studentBO.getId());
-            signRecordDO.setSignId(signDO.getId());
+            signRecordDO.setSignId(signId);
             signRecordDO.setSignTime(LocalDateTime.of(1, 1,1,1,1));
-            signRecordDO.setState(Status.CREATED);
+            signRecordDO.setState(StatusConfig.RECORD_CREATED);
             signRecordDOS.add(signRecordDO);
         }
-
         signRecordMapper.insertSignRecordList(signRecordDOS);
     }
 
@@ -138,6 +147,10 @@ public class SignDAO {
         return signRecordListBO;
     }
 
+    public List<SignRecordDO> getSignRecordBySignId(Integer signId){
+        return signRecordMapper.getSignRecordBySignId(Collections.singletonList(signId));
+    }
+
     public DownloadSignRecordBOList getAllSignRecord(Integer courseId){
         StudentBOList studentBOList = studentDAO.getStudent(courseId);
         List<StudentBO> studentBOS = studentBOList.getStudentList();
@@ -149,7 +162,8 @@ public class SignDAO {
             int studentId = studentBO.getId();
 
             StudentSignRecordListBO studentSignRecordListBO = getSignRecordByStudentId(studentId, StatusConfig.ALL);
-            List<StudentSignRecordBO> studentSignRecordBOList = studentSignRecordListBO.getStudentSignRecordBOList();
+            CopyOnWriteArrayList<StudentSignRecordBO> studentSignRecordBOList = new CopyOnWriteArrayList<>();
+            studentSignRecordBOList.addAll(studentSignRecordListBO.getList());
             for (StudentSignRecordBO record :
                     studentSignRecordBOList) {
                 if(!record.getCourseId().equals(courseId)){
@@ -162,18 +176,24 @@ public class SignDAO {
         return downloadSignRecordBOList;
     }
 
-    public void UpdateSignRecordStatus(UpdateSignRecordDTO updateSignRecordDTO){
-        SignRecordDO signRecordDO = new SignRecordDO();
+    public void updateSignRecordStatus(List<UpdateSignRecordDTO> updateSignRecordDTOs){
+        List<SignRecordDO> records = new ArrayList<>();
+        for (UpdateSignRecordDTO newData :
+                updateSignRecordDTOs) {
+            SignRecordDO signRecordDO = new SignRecordDO();
 
-        signRecordDO.setState(updateSignRecordDTO.getState());
-        signRecordDO.setId(updateSignRecordDTO.getId());
-        signRecordDO.setSignTime(LocalDateTime.now());
+            signRecordDO.setState(newData.getState());
+            signRecordDO.setId(newData.getId());
+            signRecordDO.setSignTime(LocalDateTime.now());
 
-        signRecordMapper.updateSignRecord(signRecordDO);
+            records.add(signRecordDO);
+        }
+
+        signRecordMapper.updateSignRecord(records);
     }
 
-    public void sign(SignRecordDTO signRecordDTO){
-        signRecordMapper.sign(signRecordDTO);
+    public void sign(SignRecordDTO signRecordDTO, Integer studentId){
+        signRecordMapper.sign(signRecordDTO, studentId, StatusConfig.RECORD_SIGNED);
     }
 
    public SignRecordTimeListBO getRecordWeek(Integer courseId){
@@ -183,7 +203,7 @@ public class SignDAO {
         List<SignRecordTimeBO> signRecordWeekBOs = new ArrayList<>();
         for (SignDO signDO :
                signDOs) {
-            int signedCount = signRecordMapper.getSignCountBySignId(signDO.getId(), Status.SUCCESS);
+            int signedCount = signRecordMapper.getSignCountBySignId(signDO.getId(), StatusConfig.RECORD_SUCCESS);
 
             SignRecordTimeBO signRecordTimeBO = new SignRecordTimeBO();
 
@@ -212,6 +232,14 @@ public class SignDAO {
             signMapper.deleteSignByCourseId(courseId);
         }
    }
+
+    public void deleteSignRecord(Integer courseId, Integer studentId){
+        List<Integer> signIds = signMapper.getSignIdByCourseId(courseId);
+        if(signIds.size() > 0) {
+            signRecordMapper.deleteBySignIdListAndStudentId(signIds, studentId);
+        }
+    }
+
 
    public Integer getSignState(Integer signId){
         return signMapper.getStateById(signId);
@@ -246,6 +274,8 @@ public class SignDAO {
             StudentSignRecordBO studentSignRecordBO = new StudentSignRecordBO();
             studentSignRecordBO.setCourse(courseBO.getCourseName());
             studentSignRecordBO.setCourseId(courseBO.getCourseId());
+            studentSignRecordBO.setCourseNum(courseBO.getCourseNum());
+            studentSignRecordBO.setSignId(signId);
             studentSignRecordBO.setTeacher(teacherDO.getName());
             studentSignRecordBO.setTime(time);
             studentSignRecordBO.setState(signRecordDO.getState());
@@ -258,21 +288,29 @@ public class SignDAO {
             int signWeekday = courseTimeDO.getCourseWeekday();
             int currentWeek = DateUtil.getWeekFrom(LocalDateTime.parse(semesterBO.getStartTime()));
             int currentWeekday = LocalDateTime.now().getDayOfWeek().getValue();
-            if(currentWeek < signWeek || (currentWeek == signWeek  && signWeekday >=currentWeekday)){
+
+            logger.info("signWeek:"+signWeek+",signWeekday: "+signWeekday+";currentWeek: "+currentWeek+
+                    "currentWeekday: "+currentWeekday);
+
+            if(currentWeek == signWeek  && signWeekday == currentWeekday){
                 todayStudentSignRecordBOS.add(studentSignRecordBO);
-            } else {
+            } else if(currentWeek > signWeek || (currentWeek == signWeek && signWeekday < currentWeekday)) {
                 historyStudentSignRecordBOS.add(studentSignRecordBO);
             }
             studentSignRecordBOS.add(studentSignRecordBO);
         }
         if(type.equals(StatusConfig.HISTORY)){
-             studentSignRecordListBO.setStudentSignRecordBOList(historyStudentSignRecordBOS);
+             studentSignRecordListBO.setList(historyStudentSignRecordBOS);
         } else if(type.equals(StatusConfig.TODAY)){
-             studentSignRecordListBO.setStudentSignRecordBOList(todayStudentSignRecordBOS);
+             studentSignRecordListBO.setList(todayStudentSignRecordBOS);
         } else {
-            studentSignRecordListBO.setStudentSignRecordBOList(studentSignRecordBOS);
+            studentSignRecordListBO.setList(studentSignRecordBOS);
         }
         return  studentSignRecordListBO;
+    }
+
+    public List<SignDO> getAllSignByCourseId(Integer courseId){
+        return signMapper.getSign(courseId);
     }
 
 

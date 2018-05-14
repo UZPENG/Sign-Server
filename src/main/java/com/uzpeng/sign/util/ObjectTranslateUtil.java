@@ -78,7 +78,8 @@ public class ObjectTranslateUtil {
             courseTimeDO.setLoc(time.getLoc());
             courseTimeDO.setCourseSectionStart(time.getStart());
             courseTimeDO.setCourseSectionEnd(time.getEnd());
-            courseTimeDO.setCourseWeekday(time.getWeekday());
+            int weekday = time.getWeekday();
+            courseTimeDO.setCourseWeekday(weekday == 0 ? 7 : weekday);
             courseTimeDO.setCourseId(courseId);
 
             courseTimeList.add(courseTimeDO);

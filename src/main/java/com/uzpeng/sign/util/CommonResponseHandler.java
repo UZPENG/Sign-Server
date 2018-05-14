@@ -57,7 +57,6 @@ public class CommonResponseHandler {
         ErrorBO errorBO = new ErrorBO();
         errorBO.setStatus("failed");
         errorBO.setMsg("Internal Error!");
-//        errorBO.setDoc(environment.getProperty("link.doc"));
         return SerializeUtil.toJson(errorBO, ErrorBO.class);
     }
 }

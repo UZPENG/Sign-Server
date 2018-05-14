@@ -68,10 +68,12 @@ public class DateUtil {
         paramCalendar.setFirstDayOfWeek(Calendar.MONDAY);
         nowCalendar.setFirstDayOfWeek(Calendar.MONDAY);
 
-        Integer paramDay = paramCalendar.getWeeksInWeekYear();
-        Integer CurrentDay = nowCalendar.getWeeksInWeekYear();
+        Integer paramWeek = paramCalendar.get(GregorianCalendar.WEEK_OF_YEAR);
+        Integer currentWeek = nowCalendar.get(GregorianCalendar.WEEK_OF_YEAR);
 
-        return (CurrentDay - paramDay) + 1;
+        logger.info("Parameter time is "+time+",paramWeek:"+paramWeek+",currentWeek:"+currentWeek);
+
+        return (currentWeek - paramWeek) + 1;
     }
 
 }

@@ -68,4 +68,41 @@ public class SignRecordProvider {
         statementBuilder.append(")");
         return statementBuilder.toString();
     }
+
+    public String deleteBySignIdsAndStudentId(Map map){
+        //todo 类型检测
+        List list = (List)map.get("list");
+        Integer studentId = (Integer) map.get("studentId");
+
+        String statement =  "DELETE FROM course_sign_record WHERE student_id="+studentId+" AND course_sign_id IN ";
+        MessageFormat messageFormat = new MessageFormat("#'{'list[{0}]}");
+
+        StringBuilder statementBuilder = new StringBuilder();
+        statementBuilder.append(statement);
+        statementBuilder.append("(");
+        for (int i = 0; i < list.size(); i++) {
+            statementBuilder.append(messageFormat.format(new Object[]{i}));
+            if(i < list.size() -1){
+                statementBuilder.append(",");
+            }
+        }
+        statementBuilder.append(")");
+        return statementBuilder.toString();
+    }
+
+    public String updateAll(Map map){
+        List list = (List)map.get("list");
+
+        MessageFormat messageFormat = new MessageFormat("Update course_sign_record SET state=#'{'list[{0}].state} " +
+                ",sign_time=#'{'list[{0}].sign_time} WHERE id=#'{'list[{0}].id}");
+
+        StringBuilder statementBuilder = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            statementBuilder.append(messageFormat.format(new Object[]{i}));
+            if(i < list.size() -1){
+                statementBuilder.append(";");
+            }
+        }
+        return statementBuilder.toString();
+    }
 }

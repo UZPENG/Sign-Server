@@ -1,21 +1,27 @@
 package com.uzpeng.sign.util;
 
-import com.uzpeng.sign.support.Coordinate;
-import com.uzpeng.sign.support.Probability;
+import com.uzpeng.sign.config.StatusConfig;
+import com.uzpeng.sign.domain.SignRecordDO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author serverliu on 2018/4/10.
  */
 public class StatisticsTool {
+    private static final Logger logger = LoggerFactory.getLogger(StatisticsTool.class);
+    private static final double MIN_VALUE=0.01;
 
-    public static ArrayList<Probability>  pickAbnormalPoint(ArrayList<Coordinate> coordinates){
-        ArrayList<Double> longitude = new ArrayList<>();
-        ArrayList<Double> latitude = new ArrayList<>();
+    public static void pickAbnormalPoint(CopyOnWriteArrayList<SignRecordDO> records){
+        List<Double> longitude = new ArrayList<>();
+        List<Double> latitude = new ArrayList<>();
 
-        for (Coordinate c :
-                coordinates) {
+        for (SignRecordDO c :
+                records) {
             longitude.add(c.getLongitude());
             latitude.add(c.getLatitude());
         }
@@ -25,35 +31,49 @@ public class StatisticsTool {
         double latitudeMean = getMean(latitude);
         double latitudeSD = getSD(latitude, latitudeMean);
 
-        int size = coordinates.size();
-        ArrayList<Probability> probabilities = new ArrayList<>();
-        for (Coordinate coordinate : coordinates) {
-            double x = getNormalDistributionProbabilityDestiny(coordinate.getLongitude(), longitudeMean, longitudeSD);
-            double y = getNormalDistributionProbabilityDestiny(coordinate.getLatitude(), latitudeMean, latitudeSD);
+        int size = records.size();
+        ArrayList<Double> probabilities = new ArrayList<>();
+        for (SignRecordDO record : records) {
+            double x = getNormalDistributionProbabilityDestiny(record.getLongitude(), longitudeMean, longitudeSD);
+            double y = getNormalDistributionProbabilityDestiny(record.getLatitude(), latitudeMean, latitudeSD);
 
-            probabilities.add(new Probability(x, y));
+            probabilities.add(x * y);
         }
-        return probabilities;
+        for (int i = 0; i < records.size(); i++) {
+            SignRecordDO record = records.get(i);
+            double probability = probabilities.get(i);
+            int result = probability > MIN_VALUE ? StatusConfig.RECORD_SUCCESS : StatusConfig.RECORD_FAILED;
+
+            logger.debug("signId is "+record.getId()+" result:"+result);
+
+            record.setState(result);
+        }
     }
 
-    private static double getMean(ArrayList<Double> data){
+    private static double getMean(List<Double> data){
+        CopyOnWriteArrayList<Double> safeData = new CopyOnWriteArrayList<>();
+        safeData.addAll(data);
+
         double result = 0;
-        for (Double d : data) {
+        for (Double d : safeData) {
             result += d;
         }
 
         return result / data.size();
     }
 
-    private static double getSD(ArrayList<Double> data){
+    private static double getSD(List<Double> data){
        return getSD(data, getMean(data));
     }
 
-    private static double getSD(ArrayList<Double> data, double mean){
+    private static double getSD(List<Double> data, double mean){
+        CopyOnWriteArrayList<Double> safeData = new CopyOnWriteArrayList<>();
+        safeData.addAll(data);
+
         int size = data.size();
         double result = 0;
 
-        for (Double d : data) {
+        for (Double d : safeData) {
             result += Math.pow((d - mean), 2);
         }
 

@@ -1,7 +1,11 @@
 package com.uzpeng.sign.service;
 
-import com.uzpeng.sign.dao.StudentDAO;
+import com.uzpeng.sign.bo.StudentBO;
 import com.uzpeng.sign.bo.StudentBOList;
+import com.uzpeng.sign.bo.StudentSignRecordListBO;
+import com.uzpeng.sign.dao.SignDAO;
+import com.uzpeng.sign.dao.StudentDAO;
+import com.uzpeng.sign.dao.UserDAO;
 import com.uzpeng.sign.domain.StudentDO;
 import com.uzpeng.sign.exception.IllegalParameterException;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
@@ -32,6 +36,10 @@ public class StudentService {
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
     @Autowired
     private StudentDAO studentDAO;
+    @Autowired
+    private SignDAO signDAO;
+    @Autowired
+    private UserDAO userDAO;
 
     public void insertStudentsByFile(InputStream excelFileStream, String fiLeName, Integer courseId)
             throws IllegalParameterException{
@@ -58,6 +66,18 @@ public class StudentService {
         studentDAO.removeStudent(Integer.parseInt(courseId), Integer.parseInt(studentId));
     }
 
+    public StudentSignRecordListBO getStudentSignRecordList(int studentId, int type){
+        return signDAO.getSignRecordByStudentId(studentId, type);
+    }
+
+    public StudentBO getStudentById(Integer studentId){
+        return ObjectTranslateUtil.studentDOToStudentBO(studentDAO.getStudentById(studentId));
+    }
+
+    public Integer getStudentByOpenId(String openId){
+        return userDAO.getRoleIdByOpenId(openId);
+    }
+
     private List<StudentDO> parseExcelFile(InputStream excelFileStream, String filename) throws IllegalParameterException{
         logger.info("filename is "+filename);
         Workbook workbook;
@@ -70,9 +90,9 @@ public class StudentService {
                 throw new IllegalParameterException();
             }
             Sheet sheet = workbook.getSheetAt(0);
-            int rowCount = sheet.getLastRowNum();
+            int lastRowNum = sheet.getLastRowNum();
             List<StudentDO> studentDOList = new ArrayList<>();
-            for (int i = 1; i < rowCount; i++) {
+            for (int i = 1; i <= lastRowNum; i++) {
                 //todo 需要添加单元格判断
                 Row currentRow = sheet.getRow(i);
                 if(currentRow == null){

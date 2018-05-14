@@ -67,4 +67,9 @@ public class UserService {
     public void updatePassword(Integer id, String newPassword){
         userDAO.updatePassword(id , newPassword);
     }
+
+    public UserDO getUserByOpenId(String openId, String oldPassword){
+        return userDAO.getUserByOpenId(openId, oldPassword);
+    }
+
 }

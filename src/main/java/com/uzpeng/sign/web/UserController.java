@@ -6,10 +6,7 @@ import com.uzpeng.sign.support.SessionAttribute;
 import com.uzpeng.sign.domain.UserDO;
 import com.uzpeng.sign.service.UserService;
 import com.uzpeng.sign.util.*;
-import com.uzpeng.sign.web.dto.EmailDTO;
-import com.uzpeng.sign.web.dto.LoginDTO;
-import com.uzpeng.sign.web.dto.PasswordDTO;
-import com.uzpeng.sign.web.dto.RegisterDTO;
+import com.uzpeng.sign.web.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +117,6 @@ public class UserController {
     @ResponseBody
     public String login( HttpServletRequest request, HttpServletResponse response,
                         HttpSession session){
-
         try {
             String json = SerializeUtil.readStringFromReader(request.getReader());
             LoginDTO loginDTO = SerializeUtil.fromJson(json, LoginDTO.class);
@@ -130,22 +126,24 @@ public class UserController {
             logger.info("finish check password, start set cookie...");
 
             if(id != null) {
-                String cookieValue = Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes());
-                SessionAttribute authInfo = new SessionAttribute(cookieValue, LocalDateTime.MAX);
-                session.setAttribute(SessionStoreKey.KEY_AUTH, authInfo);
-
-                Cookie cookie = new Cookie(SessionStoreKey.KEY_AUTH, cookieValue);
-                cookie.setPath("/");
-                cookie.setHttpOnly(true);
-                response.addCookie(cookie);
-
                 UserDO userDO = userService.getUserInfo(String.valueOf(id));
-                UserMap.putUser(cookieValue, userDO);
+                if(userDO.getRole().equals(Role.TEACHER)) {
+                    String cookieValue = Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes());
+                    SessionAttribute authInfo = new SessionAttribute(cookieValue, LocalDateTime.MAX);
+                    session.setAttribute(SessionStoreKey.KEY_AUTH, authInfo);
 
-                logger.info("Login successfully! user is is "+userDO.getRoleId());
+                    Cookie cookie = new Cookie(SessionStoreKey.KEY_AUTH, cookieValue);
+                    cookie.setPath("/");
+                    cookie.setHttpOnly(true);
+                    response.addCookie(cookie);
 
-                return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
-                        env.getProperty("msg.login.success"),  env.getProperty("link.login"));
+                    UserMap.putUser(cookieValue, userDO);
+
+                    logger.info("Login successfully! user is is " + userDO.getRoleId());
+
+                    return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                            env.getProperty("msg.login.success"), env.getProperty("link.login"));
+                }
             } else {
                 response.setStatus(404);
                 return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
@@ -205,5 +203,26 @@ public class UserController {
                 env.getProperty("status.failed"),  env.getProperty("link.host"));
     }
 
+    @RequestMapping(value = "/v1/student/password", method = RequestMethod.PUT, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String updateStudentPassword(HttpServletRequest request, HttpSession session){
+        try{
+            String json = SerializeUtil.readStringFromReader(request.getReader());
+            StudentChangePasswordDTO studentChangePasswordDTO =  SerializeUtil.fromJson(
+                    json, StudentChangePasswordDTO.class);
+
+            UserDO userDO = userService.getUserByOpenId(studentChangePasswordDTO.getOpenId(),
+                    studentChangePasswordDTO.getOldPassword());
+            if(userDO != null) {
+                userService.updatePassword(userDO.getId(), studentChangePasswordDTO.getNewPassword());
+                return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
+                        env.getProperty("status.success"),  env.getProperty("link.host"));
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return CommonResponseHandler.handleResponse(StatusConfig.FAILED,
+                env.getProperty("status.failed"),  env.getProperty("link.host"));
+    }
 
 }

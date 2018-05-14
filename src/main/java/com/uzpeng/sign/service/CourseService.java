@@ -1,12 +1,11 @@
 package com.uzpeng.sign.service;
 
-import com.uzpeng.sign.dao.CourseDAO;
-import com.uzpeng.sign.dao.CourseTimeDAO;
 import com.uzpeng.sign.bo.CourseBO;
 import com.uzpeng.sign.bo.CourseListBO;
 import com.uzpeng.sign.bo.CourseTimeBO;
 import com.uzpeng.sign.bo.CourseTimeListBO;
-import com.uzpeng.sign.domain.CourseDO;
+import com.uzpeng.sign.dao.CourseDAO;
+import com.uzpeng.sign.dao.CourseTimeDAO;
 import com.uzpeng.sign.domain.CourseTimeDO;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.web.dto.CourseDTO;

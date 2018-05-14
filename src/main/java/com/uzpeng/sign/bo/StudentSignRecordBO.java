@@ -7,12 +7,30 @@ public class StudentSignRecordBO {
     private String studentName;
     private String  classInfo;
     private String  studentNum;
+    private String  courseNum;
     private Integer state;
     private String course;
     private String time;
     private String teacher;
     private Integer courseId;
+    private Integer signId;
     private String loc;
+
+    public Integer getSignId() {
+        return signId;
+    }
+
+    public void setSignId(Integer signId) {
+        this.signId = signId;
+    }
+
+    public String getCourseNum() {
+        return courseNum;
+    }
+
+    public void setCourseNum(String courseNum) {
+        this.courseNum = courseNum;
+    }
 
     public Integer getCourseId() {
         return courseId;

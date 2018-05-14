@@ -52,7 +52,19 @@ public class UserDAO {
         return userMapper.getRole(id);
     }
 
+    public Integer getRoleIdByOpenId(String openId){
+        return userMapper.getRoleIdByOpenId(openId);
+    }
+
     public void updatePassword(Integer id, String newPassword){
         userMapper.updatePassword(id, CryptoUtil.encodePassword(newPassword));
+    }
+    public UserDO getUserByOpenId(String openId, String oldPassword){
+        UserDO userDO = userMapper.getUserByOpenId(openId);
+        if(CryptoUtil.match(oldPassword, userDO.getPassword())){
+            return userDO;
+        } else {
+            return null;
+        }
     }
 }

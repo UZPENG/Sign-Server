@@ -14,12 +14,13 @@ public interface SignRecordMapper {
     @InsertProvider(type = SignRecordProvider.class, method = "insertAll")
     void insertSignRecordList(@Param("list")List<SignRecordDO> signRecordDOS);
 
-    @Update("Update course_sign_record SET state=#{record.state}, sign_time=#{record.sign_time} WHERE id=#{record.id}")
-    void updateSignRecord(@Param("record")SignRecordDO signRecordDO);
+    @UpdateProvider(type = SignRecordProvider.class, method = "updateAll")
+    void updateSignRecord(@Param("list")List<SignRecordDO> signRecordDO);
 
     @Update("UPDATE course_sign_record SET longitude=#{sign.longitude}, latitude=#{sign.latitude}," +
-            "state=#{sign.state} WHERE id=#{sign.id}")
-    void sign(@Param("sign") SignRecordDTO signRecordDTO);
+            "accuracy=#{sign.accuracy}, state=#{state} WHERE course_sign_id=#{sign.signId} AND student_id=#{studentId}")
+    void sign(@Param("sign") SignRecordDTO signRecordDTO, @Param("studentId")Integer studentId,
+              @Param("state") Integer state);
 
     @Select("SELECT * FROM course_sign_record WHERE course_sign_id=#{id}")
     List<SignRecordDO> getSignRecord(@Param("id") Integer signId);
@@ -27,7 +28,7 @@ public interface SignRecordMapper {
     @Select("SELECT * FROM course_sign_record WHERE student_id=#{id}")
     List<SignRecordDO> getSignRecordByStudentId(@Param("id") Integer studentId);
 
-    @InsertProvider(type = SignRecordProvider.class, method = "getBySignIds")
+    @SelectProvider(type = SignRecordProvider.class, method = "getBySignIds")
     List<SignRecordDO> getSignRecordBySignId(@Param("list") List<Integer> signIds);
 
     @Select("SELECT week FROM course_sign_record WHERE course_id=#{courseId} GROUP BY week")
@@ -38,4 +39,7 @@ public interface SignRecordMapper {
 
     @DeleteProvider(type = SignRecordProvider.class, method = "deleteBySignIds")
     void deleteBySignIdList(@Param("list") List<Integer> signIds);
+
+    @DeleteProvider(type = SignRecordProvider.class, method = "deleteBySignIdsAndStudentId")
+    void deleteBySignIdListAndStudentId(@Param("list") List<Integer> signIds, @Param("studentId") Integer studentId);
 }

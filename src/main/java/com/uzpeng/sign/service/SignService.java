@@ -1,15 +1,19 @@
 package com.uzpeng.sign.service;
 
-import com.uzpeng.sign.dao.SignDAO;
 import com.uzpeng.sign.bo.DownloadSignRecordBOList;
 import com.uzpeng.sign.bo.SignRecordListBO;
 import com.uzpeng.sign.bo.SignRecordTimeListBO;
 import com.uzpeng.sign.bo.StudentSignRecordBO;
+import com.uzpeng.sign.config.StatusConfig;
+import com.uzpeng.sign.dao.CourseDAO;
+import com.uzpeng.sign.dao.SignDAO;
+import com.uzpeng.sign.domain.SignRecordDO;
 import com.uzpeng.sign.exception.DuplicateDataException;
-import com.uzpeng.sign.util.Status;
+import com.uzpeng.sign.util.StatisticsTool;
 import com.uzpeng.sign.web.dto.CreateSignRecordDTO;
 import com.uzpeng.sign.web.dto.SignRecordDTO;
 import com.uzpeng.sign.web.dto.UpdateSignRecordDTO;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -20,7 +24,9 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author uzpeng on 2018/4/16.
@@ -43,11 +49,11 @@ public class SignService {
     }
 
     public void updateSignState(UpdateSignRecordDTO updateSignRecordDTO){
-        signDAO.UpdateSignRecordStatus(updateSignRecordDTO);
+        signDAO.updateSignRecordStatus(Collections.singletonList(updateSignRecordDTO));
     }
 
-    public void doingSign(SignRecordDTO signRecordDTO){
-        signDAO.sign(signRecordDTO);
+    public void doingSign(SignRecordDTO signRecordDTO, int studentId){
+        signDAO.sign(signRecordDTO, studentId);
     }
 
     public Integer getSignState(Integer signId){
@@ -58,6 +64,25 @@ public class SignService {
         signDAO.updateSignState(signId, state);
     }
 
+    public void evaluateSignResult(Integer signId){
+        CopyOnWriteArrayList<SignRecordDO> signRecordDOs = new CopyOnWriteArrayList<>();
+        signRecordDOs.addAll(signDAO.getSignRecordBySignId(signId));
+
+        StatisticsTool.pickAbnormalPoint(signRecordDOs);
+
+        List<UpdateSignRecordDTO> newDataList = new ArrayList<>();
+        for (SignRecordDO oldData :
+             signRecordDOs) {
+            UpdateSignRecordDTO newData = new UpdateSignRecordDTO();
+            newData.setState(oldData.getState());
+            newData.setId(oldData.getId());
+
+            newDataList.add(newData);
+        }
+        signDAO.updateSignRecordStatus(newDataList);
+    }
+
+
     public byte[] downloadSignAllRecord(Integer courseId) throws IOException{
         DownloadSignRecordBOList downloadSignRecordBOList = signDAO.getAllSignRecord(courseId);
         return writeToExcel(downloadSignRecordBOList.getDownloadSignRecordLists());
@@ -67,10 +92,16 @@ public class SignService {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet();
 
+        int[] columnWidth=new int[]{255*15,255*20,255*10,255*15};
         String[] studentInfoTitle = {"学号","班级","姓名","课程"};
+        sheet.setColumnWidth(0,columnWidth[0]);
+        sheet.setColumnWidth(1,columnWidth[1]);
+        sheet.setColumnWidth(2,columnWidth[2]);
+        sheet.setColumnWidth(3,columnWidth[3]);
         Row titleRow = sheet.createRow(0);
         for (int i = 0; i < studentInfoTitle.length; i++) {
-            titleRow.createCell(i).setCellValue(studentInfoTitle[i]);
+            Cell cell = titleRow.createCell(i);
+            cell.setCellValue(studentInfoTitle[i]);
         }
         List<String> timeTitleList = new ArrayList<>();
         List<StudentSignRecordBO> tmpList = list.get(0);
@@ -81,6 +112,7 @@ public class SignService {
 
         for (int i = 0; i < tmpList.size(); i++) {
             titleRow.createCell(studentInfoTitle.length+i).setCellValue(timeTitleList.get(i));
+            sheet.setColumnWidth(studentInfoTitle.length+i,255*30);
         }
 
         for (int i = 0; i < list.size(); i++) {
@@ -94,7 +126,7 @@ public class SignService {
 
             for (int j = 0; j < recordBOs.size(); j++) {
                 StudentSignRecordBO record = recordBOs.get(j);
-                String state = record.getState().equals(Status.SUCCESS) ? "成功" : "失败";
+                String state = record.getState().equals(StatusConfig.RECORD_SUCCESS) ? "成功" : "失败";
                 currentRow.createCell(studentInfoTitle.length+j).setCellValue(state);
             }
         }

@@ -1,10 +1,10 @@
 package com.uzpeng.sign.web;
 
-import com.uzpeng.sign.config.StatusConfig;
+import com.uzpeng.sign.bo.StudentBO;
 import com.uzpeng.sign.bo.StudentBOList;
-import com.uzpeng.sign.domain.RoleDO;
+import com.uzpeng.sign.bo.StudentSignRecordListBO;
+import com.uzpeng.sign.config.StatusConfig;
 import com.uzpeng.sign.domain.UserDO;
-import com.uzpeng.sign.exception.NoAuthenticatedException;
 import com.uzpeng.sign.service.StudentService;
 import com.uzpeng.sign.support.SessionAttribute;
 import com.uzpeng.sign.util.*;
@@ -66,7 +66,7 @@ public class StudentController {
             , produces = "application/json;charset=utf-8")
     @ResponseBody
     public String insertStudent(HttpServletRequest request,  HttpSession session, HttpServletResponse response,
-                                @PathVariable("courseId") String id) throws NoAuthenticatedException{
+                                @PathVariable("courseId") String id) {
         SessionAttribute auth = (SessionAttribute) session.getAttribute(SessionStoreKey.KEY_AUTH);
         UserDO role = UserMap.getUser((String)auth.getObj());
         if(role != null && role.getRole().equals(Role.TEACHER)) {
@@ -132,5 +132,46 @@ public class StudentController {
         }
 
         return CommonResponseHandler.handleNoAuthentication(response);
+    }
+
+    @RequestMapping(value = "/v1/student", method = RequestMethod.GET,
+            produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String getStudentByOpenId( HttpServletRequest request, HttpServletResponse response){
+        try {
+            logger.info("getStudentByOpenId");
+            String openId = request.getParameter("openId");
+
+            if(openId != null ) {
+                Integer studentId = studentService.getStudentByOpenId(openId);
+                StudentBO studentBO = studentService.getStudentById(studentId);
+                return  CommonResponseHandler.handleResponse(studentBO, StudentBO.class);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return CommonResponseHandler.handleException(response);
+    }
+
+    @RequestMapping(value = "/v1/student/sign", method = RequestMethod.GET,
+            produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String getStudentRecordByOpenId( HttpServletRequest request, HttpServletResponse response){
+        try {
+            String openId = request.getParameter("openId");
+            String type = request.getParameter("type");
+
+            if(openId != null && !openId.equals("")) {
+                Integer studentId = studentService.getStudentByOpenId(openId);
+                StudentSignRecordListBO studentSignRecordListBO = studentService.getStudentSignRecordList(
+                        studentId, Integer.parseInt(type));
+                return  CommonResponseHandler.handleResponse(studentSignRecordListBO, StudentSignRecordListBO.class);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return CommonResponseHandler.handleException(response);
     }
 }

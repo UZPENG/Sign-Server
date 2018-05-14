@@ -4,6 +4,7 @@ import com.uzpeng.sign.config.StatusConfig;
 import com.uzpeng.sign.bo.SignHttpLinkBO;
 import com.uzpeng.sign.net.dto.SignDTO;
 import com.uzpeng.sign.util.SerializeUtil;
+import com.uzpeng.sign.util.UserMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +38,13 @@ public class SignWebSocketHandler extends TextWebSocketHandler{
         logger.info("handleTextMessage:"+payload);
 
         SignDTO signDTO = SerializeUtil.fromJson(payload, SignDTO.class);
-        if(signDTO.getStart().equals(StatusConfig.START)) {
+        if(signDTO.getStart().equals(StatusConfig.SIGN_START_FLAG)) {
             timer = new Timer();
             SendSignLinkTask sendSignLinkTask = new SendSignLinkTask(session, signDTO);
             logger.info("start construct-sign-link task .....");
             timer.schedule(sendSignLinkTask, 0, DEFAULT_REFRESH_TIME);
         } else {
             logger.info("cancel construct-sign-link task, close websocket session ");
-
             session.close();
         }
     }
@@ -59,6 +59,8 @@ public class SignWebSocketHandler extends TextWebSocketHandler{
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         logger.info("afterConnectionClosed");
         timer.cancel();
+        UserMap.removeToken(UserMap.getSignId(session.getId()));
+        UserMap.removeSignId(session.getId());
         super.afterConnectionClosed(session, status);
     }
 
@@ -68,11 +70,14 @@ public class SignWebSocketHandler extends TextWebSocketHandler{
         String sourceStr = randomStr+signDTO.getSignId()+signDTO.getCourseId();
         String token = new String(Base64.getEncoder().encode(Sha512DigestUtils.sha(sourceStr)), "utf-8");
 
-        String url = environment.getProperty("link.host") + "/v1/course/"+signDTO.getCourseId()+"/sign/"+signDTO.getSignId()+"?token="+token;
+        String url = environment.getProperty("link.host") + "/v1/student/sign?token="+token;
         logger.info("token is "+token+", url:"+url);
 
         SignHttpLinkBO signHttpLinkBO = new SignHttpLinkBO();
         signHttpLinkBO.setLink(url);
+
+        UserMap.putToken(signDTO.getSignId(), token);
+        UserMap.putSignId(session.getId(), signDTO.getSignId());
 
         session.sendMessage(new TextMessage(SerializeUtil.toJson(signHttpLinkBO, SignHttpLinkBO.class)));
     }

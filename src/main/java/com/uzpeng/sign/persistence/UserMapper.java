@@ -22,6 +22,9 @@ public interface UserMapper {
     @Select("SELECT * FROM user WHERE email=#{email}")
     UserDO checkEmailValid(@Param("email") String email);
 
+    @Select("SELECT * FROM user WHERE open_id=#{openId}")
+    UserDO getUserByOpenId(@Param("openId") String openId);
+
     @Insert("INSERT INTO user(name, password, register_time, email) VALUES(#{user.name}, #{user.password}," +
             " #{user.register_time,jdbcType=TIMESTAMP}, #{user.email})")
     void addUser(@Param("user")UserDO userDO);
@@ -37,4 +40,7 @@ public interface UserMapper {
 
     @Update("UPDATE user SET password=#{password} WHERE id=#{id}")
     void updatePassword(@Param("id")Integer id, @Param("password") String password);
+
+    @Select("SELECT role_id FROM user WHERE open_id=#{openId}")
+    Integer getRoleIdByOpenId(@Param("openId")String openId);
 }

@@ -1,7 +1,6 @@
 package com.uzpeng.sign.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -11,6 +10,9 @@ import java.util.Random;
 public class RandomUtil {
 
     public static <T>  List<T> pickAmountRandomly(List<T> list, int amount){
+        if(list.size() <= amount){
+            return list;
+        }
         List<T> copyList = new ArrayList<>(list);
 
         List<T> result = new ArrayList<>();

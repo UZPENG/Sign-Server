@@ -35,6 +35,8 @@ public class CourseDAO {
     private SelectiveCourseDAO selectiveCourseDAO;
     @Autowired
     private SignDAO signDAO;
+    @Autowired
+    private StudentDAO studentDAO;
 
     public int addCourse(CourseDO courseDO){
         courseMapper.insertCourse(courseDO);
@@ -99,7 +101,8 @@ public class CourseDAO {
             CourseBO courseBO = ObjectTranslateUtil.courseDOToCourseBO(courseDO, courseTimeDOList, semesterBO);
             courseBO.setStudentAmount(studentCount);
 
-            if(DateUtil.isHistoryCourse(courseDO.getSemester())) {
+            LocalDateTime endTime = LocalDateTime.parse(semesterBO.getEndTime());
+            if(LocalDateTime.now().isAfter(endTime)) {
                 historyCourseList.add(courseBO);
             } else {
                 currentCourseList.add(courseBO);
@@ -117,6 +120,7 @@ public class CourseDAO {
         signDAO.deleteSignRecord(id);
         courseTimeDAO.deleteCourseTime(id);
         courseMapper.deleteCourse(id);
+
     }
 
     public void updateCourse(CourseDTO courseDTO){

@@ -8,33 +8,6 @@ public class StudentDO {
     private String student_num;
     private String name;
     private String class_info;
-    private String college_id;
-    private Integer entrance_year;
-    private String note;
-
-    public String getCollegeId() {
-        return college_id;
-    }
-
-    public void setCollegeId(String collegeId) {
-        this.college_id = collegeId;
-    }
-
-    public Integer getEntranceYear() {
-        return entrance_year;
-    }
-
-    public void setEntranceYear(Integer entranceYear) {
-        this.entrance_year = entranceYear;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
 
     public Integer getId() {
         return id;

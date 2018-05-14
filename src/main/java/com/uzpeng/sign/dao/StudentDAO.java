@@ -3,6 +3,7 @@ package com.uzpeng.sign.dao;
 import com.uzpeng.sign.bo.StudentBO;
 import com.uzpeng.sign.bo.StudentBOList;
 import com.uzpeng.sign.domain.SelectiveCourseDO;
+import com.uzpeng.sign.domain.SignDO;
 import com.uzpeng.sign.domain.StudentDO;
 import com.uzpeng.sign.domain.UserDO;
 import com.uzpeng.sign.persistence.StudentMapper;
@@ -43,11 +44,14 @@ public class StudentDAO {
 
         logger.info("existNumList is "+existNumList.size());
 
+        List<String> repeatNumList = new ArrayList<>();
         List<StudentDO> noAccountStudents = new ArrayList<>();
         for (StudentDO student :
                 students) {
             if (existNumList.size() == 0 || !existNumList.contains(student.getNum())){
                 noAccountStudents.add(student);
+            } else if(existNumList.size() != 0){
+                repeatNumList.add(student.getNum());
             }
         }
 
@@ -67,11 +71,30 @@ public class StudentDAO {
                 tmpUser.setRegisterTime(LocalDateTime.now());
                 users.add(tmpUser);
             }
-            //todo 处理已经存在的异常
+
             userDAO.insertUserList(users);
         }
 
         insertSelectiveCourse(students, courseId);
+
+        List<SignDO> signDOList = signDAO.getAllSignByCourseId(courseId);
+        List<StudentBO> studentBOS = new ArrayList<>();
+        if(repeatNumList.size() > 0) {
+            List<StudentDO> repeatStudents = studentMapper.getStudentsByNum(repeatNumList);
+            for (StudentDO student :
+                    repeatStudents) {
+                studentBOS.add(ObjectTranslateUtil.studentDOToStudentBO(student));
+            }
+        }
+        for (StudentDO student :
+                noAccountStudents) {
+            studentBOS.add(ObjectTranslateUtil.studentDOToStudentBO(student));
+        }
+
+        for (SignDO sign :
+                signDOList) {
+            signDAO.addStudentToSignRecord(sign.getId(), studentBOS);
+        }
     }
 
     public void insertStudent(StudentDO studentDO, Integer courseId){
@@ -104,7 +127,7 @@ public class StudentDAO {
         return studentBOList;
     }
 
-    public StudentBOList  searchStudentByNum(String num){
+    public StudentBOList searchStudentByNum(String num){
         String queryStr = "%" + num + "%";
 
         StudentBOList studentBOList = new StudentBOList();
@@ -129,6 +152,8 @@ public class StudentDAO {
 
     public void removeStudent(Integer courseId, Integer studentId){
         selectiveCourseDAO.removeStudent(courseId, studentId);
+
+        signDAO.deleteSignRecord(courseId, studentId);
     }
 
     private void insertSelectiveCourse(List<StudentDO> studentDOS, Integer courseId){

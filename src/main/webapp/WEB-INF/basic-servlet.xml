@@ -27,13 +27,15 @@
             <mvc:exclude-mapping path="/v1/login" />
             <mvc:exclude-mapping path="/v1/logout" />
             <mvc:exclude-mapping path="/errors" />
+            <mvc:exclude-mapping path="/v1/student/*"/>
+            <mvc:exclude-mapping path="/v1/student"/>
             <mvc:exclude-mapping path="/v1/register" />
             <mvc:exclude-mapping path="/v1/register/*" />
             <bean class="com.uzpeng.sign.interceptor.AuthenticatedInterceptor" />
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <websocket:handlers allowed-origins="${cross-site.origin}">
+    <websocket:handlers allowed-origins="https://api.funwt.top">
         <websocket:mapping path="/websocket/sign" handler="signHandler"/>
         <websocket:handshake-interceptors>
             <bean class="com.uzpeng.sign.interceptor.WebSocketInterceptor"/>
