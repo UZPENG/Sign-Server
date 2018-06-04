@@ -31,11 +31,16 @@ public class StatisticsTool {
         double latitudeMean = getMean(latitude);
         double latitudeSD = getSD(latitude, latitudeMean);
 
+        logger.debug("longitudeMean: "+longitudeMean+",longitudeSD: "+longitudeSD+" latitudeMean:"+latitudeMean+
+                ",latitudeSD"+latitudeSD);
+
         int size = records.size();
         ArrayList<Double> probabilities = new ArrayList<>();
         for (SignRecordDO record : records) {
             double x = getNormalDistributionProbabilityDestiny(record.getLongitude(), longitudeMean, longitudeSD);
             double y = getNormalDistributionProbabilityDestiny(record.getLatitude(), latitudeMean, latitudeSD);
+
+            logger.debug("x: "+x+",y: "+y);
 
             probabilities.add(x * y);
         }
@@ -44,7 +49,7 @@ public class StatisticsTool {
             double probability = probabilities.get(i);
             int result = probability > MIN_VALUE ? StatusConfig.RECORD_SUCCESS : StatusConfig.RECORD_FAILED;
 
-            logger.debug("signId is "+record.getId()+" result:"+result);
+            logger.debug("probability: "+probability+",signId is "+record.getId()+" result:"+result);
 
             record.setState(result);
         }
@@ -81,8 +86,8 @@ public class StatisticsTool {
     }
 
     private static double getNormalDistributionProbabilityDestiny(double data, double mean, double sd){
-        double base = 1 / (Math.sqrt(2 * Math.PI) * sd);
-        double exponent = - (Math.pow((data - mean), 2) / 2 * Math.pow(sd, 2));
+        double base = 1 / (Math.sqrt(2 * Math.PI * sd));
+        double exponent = - ((Math.pow((data - mean), 2)) / (2 * Math.pow(sd, 2)));
 
         return  Math.pow(base, exponent);
     }

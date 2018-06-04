@@ -32,13 +32,13 @@ public class CommonExceptionHandler extends ExceptionHandlerExceptionResolver {
     @ExceptionHandler({Exception.class})
     private String HandleException(HttpServletResponse response, Exception exception){
         try {
-            logger.warn("catch exception -> "+exception.getMessage());
+            logger.error("catch exception -> "+exception.getMessage());
             exception.printStackTrace();
             if(exception instanceof BaseException){
                 response.setStatus(((BaseException) exception).getStatus());
                 Writer writer = response.getWriter();
 
-                logger.info("base exception");
+                logger.error("base exception");
                 ErrorBO errorBO = new ErrorBO();
                 errorBO.setStatus(env.getProperty("status.failed"));
                 errorBO.setMsg(((BaseException) exception).getMsg());

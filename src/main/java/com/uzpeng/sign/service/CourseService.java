@@ -6,6 +6,7 @@ import com.uzpeng.sign.bo.CourseTimeBO;
 import com.uzpeng.sign.bo.CourseTimeListBO;
 import com.uzpeng.sign.dao.CourseDAO;
 import com.uzpeng.sign.dao.CourseTimeDAO;
+import com.uzpeng.sign.dao.SignDAO;
 import com.uzpeng.sign.domain.CourseTimeDO;
 import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.web.dto.CourseDTO;
@@ -24,6 +25,8 @@ public class CourseService {
     private CourseDAO courseDAO;
     @Autowired
     private CourseTimeDAO courseTimeDAO;
+    @Autowired
+    private SignDAO signDAO;
 
     public void addCourse(CourseDTO courseDTO){
         int courseId = courseDAO.addCourse(ObjectTranslateUtil.courseDTOToCourseDO(courseDTO));
@@ -48,9 +51,15 @@ public class CourseService {
 
     public void updateCourse(CourseDTO courseDTO){
         Integer courseId = Integer.parseInt(courseDTO.getCourseId());
-        courseTimeDAO.deleteCourseTime(courseId);
 
-        courseTimeDAO.addCourseTimeList(ObjectTranslateUtil.courseDTOToCourseTimeDO(courseDTO, courseId));
+        List<CourseTimeDO> courseTimeDOs = ObjectTranslateUtil.courseDTOToCourseTimeDO(courseDTO, courseId);
+        boolean isExistSignRecord = signDAO.checkIsExistRecordByCourseId(courseId);
+        if(isExistSignRecord){
+            courseTimeDAO.updateCourseTimeList(courseId);
+        } else {
+            courseTimeDAO.deleteCourseTime(courseId);
+        }
+        courseTimeDAO.addCourseTimeList(courseTimeDOs);
         courseDAO.updateCourse(courseDTO);
     }
 

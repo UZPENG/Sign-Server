@@ -150,7 +150,7 @@ public class CourseController {
                 courseDTO.setTeacherId(role.getRoleId());
                 courseService.updateCourse(courseDTO);
                 return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
-                        env.getProperty("msg.success"),  env.getProperty("link.doc"));
+                        env.getProperty("status.success"),  env.getProperty("link.doc"));
             } else {
                 return CommonResponseHandler.handleNoAuthentication(response);
             }

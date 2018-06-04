@@ -11,6 +11,7 @@ import com.uzpeng.sign.util.ObjectTranslateUtil;
 import com.uzpeng.sign.util.SpringContextUtil;
 import com.uzpeng.sign.web.dto.SignRecordDTO;
 import com.uzpeng.sign.web.dto.UpdateSignRecordDTO;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,7 +149,7 @@ public class SignDAO {
     }
 
     public List<SignRecordDO> getSignRecordBySignId(Integer signId){
-        return signRecordMapper.getSignRecordBySignId(Collections.singletonList(signId));
+        return signRecordMapper.getSignedRecord(signId);
     }
 
     public DownloadSignRecordBOList getAllSignRecord(Integer courseId){
@@ -313,5 +314,7 @@ public class SignDAO {
         return signMapper.getSign(courseId);
     }
 
-
+    public boolean checkIsExistRecordByCourseId(Integer courseId){
+        return signMapper.getSign(courseId).size() > 0;
+    }
 }

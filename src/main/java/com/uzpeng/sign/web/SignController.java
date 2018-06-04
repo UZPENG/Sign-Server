@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -75,11 +76,16 @@ public class SignController {
             Integer studentId = studentService.getStudentByOpenId(openId);
 
             String token = request.getParameter("token");
+            String decodedToken = null;
+            if(token != null){
+                decodedToken = URLDecoder.decode(token, "utf8");
+            }
+
             logger.info("token:" + token);
 
             String storedToken = UserMap.getToken(Integer.parseInt(signRecordDTO.getSignId()));
             logger.info("storedToken:" + storedToken);
-            if (token != null && !token.equals("") && token.equals(storedToken)) {
+            if (decodedToken != null && !token.equals("") && token.equals(storedToken)) {
                 signService.doingSign(signRecordDTO, studentId);
                 return CommonResponseHandler.handleResponse(StatusConfig.SUCCESS,
                         env.getProperty("status.success"), env.getProperty("link.doc"));

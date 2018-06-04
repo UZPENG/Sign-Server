@@ -31,6 +31,9 @@ public interface SignRecordMapper {
     @SelectProvider(type = SignRecordProvider.class, method = "getBySignIds")
     List<SignRecordDO> getSignRecordBySignId(@Param("list") List<Integer> signIds);
 
+    @Select("SELECT * FROM course_sign_record WHERE course_sign_id=#{id} AND latitude is not null AND longitude is not null")
+    List<SignRecordDO> getSignedRecord(@Param("id") Integer id);
+
     @Select("SELECT week FROM course_sign_record WHERE course_id=#{courseId} GROUP BY week")
     List<Integer> getWeeks(@Param("courseId") Integer courseId);
 

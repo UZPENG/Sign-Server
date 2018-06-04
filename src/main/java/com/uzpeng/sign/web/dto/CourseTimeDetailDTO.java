@@ -4,10 +4,19 @@ package com.uzpeng.sign.web.dto;
  * @author uzpeng on 2018/4/22.
  */
 public class CourseTimeDetailDTO {
+    private Integer id;
     private Integer weekday;
     private Integer start;
     private Integer end;
     private String loc;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Integer getWeekday() {
         return weekday;

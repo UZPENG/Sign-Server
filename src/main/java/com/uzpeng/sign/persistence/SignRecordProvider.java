@@ -93,7 +93,7 @@ public class SignRecordProvider {
     public String updateAll(Map map){
         List list = (List)map.get("list");
 
-        MessageFormat messageFormat = new MessageFormat("Update course_sign_record SET state=#'{'list[{0}].state} " +
+        MessageFormat messageFormat = new MessageFormat("UPDATE course_sign_record SET state=#'{'list[{0}].state}" +
                 ",sign_time=#'{'list[{0}].sign_time} WHERE id=#'{'list[{0}].id}");
 
         StringBuilder statementBuilder = new StringBuilder();

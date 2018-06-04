@@ -19,6 +19,10 @@ public class CourseTimeDAO {
         mapper.addCourseTimeList(courseTimeDOList);
     }
 
+    public void updateCourseTimeList(Integer courseId){
+        mapper.updateCourseTimeList(courseId);
+    }
+
     public  List<CourseTimeDO> getCourseTimeByCourseId(Integer courseId){
         return mapper.getCourseTimeByCourseId(courseId);
     }

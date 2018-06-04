@@ -18,6 +18,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Service
 public class SignService {
+    private final Logger logger = LoggerFactory.getLogger(SignService.class);
     @Autowired
     private SignDAO signDAO;
 
@@ -68,12 +71,17 @@ public class SignService {
         CopyOnWriteArrayList<SignRecordDO> signRecordDOs = new CopyOnWriteArrayList<>();
         signRecordDOs.addAll(signDAO.getSignRecordBySignId(signId));
 
+        if(signRecordDOs.size() == 0){
+            return;
+        }
+
         StatisticsTool.pickAbnormalPoint(signRecordDOs);
 
         List<UpdateSignRecordDTO> newDataList = new ArrayList<>();
         for (SignRecordDO oldData :
              signRecordDOs) {
             UpdateSignRecordDTO newData = new UpdateSignRecordDTO();
+            logger.info("state: "+oldData.getState()+",id: "+oldData.getId());
             newData.setState(oldData.getState());
             newData.setId(oldData.getId());
 

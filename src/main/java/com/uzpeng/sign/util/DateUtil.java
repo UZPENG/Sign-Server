@@ -73,7 +73,10 @@ public class DateUtil {
 
         logger.info("Parameter time is "+time+",paramWeek:"+paramWeek+",currentWeek:"+currentWeek);
 
-        return (currentWeek - paramWeek) + 1;
+        /**
+         * 深大校历从开始时间的下一周开始算第一周
+         */
+        return currentWeek - paramWeek;
     }
 
 }

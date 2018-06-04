@@ -46,7 +46,7 @@
         <logger name="log4j.logger.java.sql.ResultSet" level="debug" additivity="false">
             <appender-ref ref="Console"/>
         </logger>
-        <root level="info">
+        <root level="debug">
             <appender-ref ref="Console"/>
         </root>
     </loggers>

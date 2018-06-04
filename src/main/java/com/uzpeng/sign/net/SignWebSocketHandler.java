@@ -16,6 +16,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,15 +38,17 @@ public class SignWebSocketHandler extends TextWebSocketHandler{
         String payload = message.getPayload();
         logger.info("handleTextMessage:"+payload);
 
-        SignDTO signDTO = SerializeUtil.fromJson(payload, SignDTO.class);
-        if(signDTO.getStart().equals(StatusConfig.SIGN_START_FLAG)) {
-            timer = new Timer();
-            SendSignLinkTask sendSignLinkTask = new SendSignLinkTask(session, signDTO);
-            logger.info("start construct-sign-link task .....");
-            timer.schedule(sendSignLinkTask, 0, DEFAULT_REFRESH_TIME);
-        } else {
-            logger.info("cancel construct-sign-link task, close websocket session ");
-            session.close();
+        if(!payload.equals("ACK")){
+            SignDTO signDTO = SerializeUtil.fromJson(payload, SignDTO.class);
+            if (signDTO.getStart().equals(StatusConfig.SIGN_START_FLAG)) {
+                timer = new Timer();
+                SendSignLinkTask sendSignLinkTask = new SendSignLinkTask(session, signDTO);
+                logger.info("start construct-sign-link task .....");
+                timer.schedule(sendSignLinkTask, 0, DEFAULT_REFRESH_TIME);
+            } else {
+                logger.info("cancel construct-sign-link task, close websocket session ");
+                session.close();
+            }
         }
     }
 
@@ -70,7 +73,8 @@ public class SignWebSocketHandler extends TextWebSocketHandler{
         String sourceStr = randomStr+signDTO.getSignId()+signDTO.getCourseId();
         String token = new String(Base64.getEncoder().encode(Sha512DigestUtils.sha(sourceStr)), "utf-8");
 
-        String url = environment.getProperty("link.host") + "/v1/student/sign?token="+token;
+        String encodedToken = URLEncoder.encode(token,"utf8");
+        String url = environment.getProperty("link.host") + "/v1/student/sign?token="+encodedToken;
         logger.info("token is "+token+", url:"+url);
 
         SignHttpLinkBO signHttpLinkBO = new SignHttpLinkBO();
